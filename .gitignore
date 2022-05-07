@@ -3,8 +3,12 @@ target/
 generatedata/.mvn/wrapper/maven-wrapper.jar
 generatedata/.mvn/wrapper/maven-wrapper.properties
 generatedata/mvnw
+MigrationMonitoringTool/.mvn/wrapper/maven-wrapper.jar
+MigrationMonitoringTool/.mvn/wrapper/maven-wrapper.properties
+MigrationMonitoringTool/mvnw
 mvnw.cmd
-generatedata/src/test
+generatedata/src/test/
+MigrationMonitoringTool/src/test
 !**/src/main/**/target/
 !**/src/test/**/target/
 
