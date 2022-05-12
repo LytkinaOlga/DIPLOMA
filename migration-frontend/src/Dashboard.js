@@ -1,7 +1,7 @@
 import Header from './components/Header';
 import ExecutionsTabs from './components/ExecutionsTabs';
 import './App.css';
-import { Container, createTheme, ThemeProvider} from '@mui/material';
+import { Container, createTheme, ThemeProvider } from '@mui/material';
 import {
   BrowserRouter,
   Routes,
@@ -22,20 +22,19 @@ const theme = createTheme({
 function Dashboard() {
   return (
     <>
-      
-    <BrowserRouter>
-    <ThemeProvider theme={theme}>
-          <Header />          
-      
-      <Routes>
-          <Route path="/executions" element={ <Executions />} />
-          <Route path="/flows" element={<Flows />} /> 
-          <Route path="/add" element={<AddFlow />} />        
-      </Routes>
-      </ThemeProvider>
-    </BrowserRouter>  
 
-    
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <Header />
+          <Routes>
+            <Route path="/executions" element={<Executions />} />
+            <Route path="/flows" element={<Flows />} />
+            <Route path="/add" element={<AddFlow />} />
+          </Routes>
+        </ThemeProvider>
+      </BrowserRouter>
+
+
     </>
   );
 }
