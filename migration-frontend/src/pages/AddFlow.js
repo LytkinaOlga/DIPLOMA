@@ -19,7 +19,7 @@ const actions = [
 export default function AddFlow() {
     return (
         <>
-            <LeftPanel />
+            
             <FlowRenderer />
             <RightPanel />
             <Button

@@ -27,6 +27,11 @@ export default function LeftPanel() {
         alert('hello world');
     }
 
+    const onDragStart = (event, nodeType) => {
+        event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.effectAllowed = 'move';
+      };
+
     return (
         <Drawer
             variant="permanent"
@@ -52,19 +57,19 @@ export default function LeftPanel() {
                         </ListItem>
                     ))}
                 </List> */}
-                <Button variant="outlined" sx={{ml:1, width: 100}} onClick={handleClick}>
+                <Button variant="outlined" sx={{ml:1, width: 100}} onDragStart={(event) => onDragStart(event, 'File Loader')} draggable>
                     <Box>
                         <InboxIcon sx={{width: 50, height: 50}}/>
                         <Typography variant='subtitle2'>File Loader</Typography>
                     </Box>
                 </Button>
-                <Button variant="outlined" sx={{ml:2, width: 100}} >
+                <Button variant="outlined" sx={{ml:2, width: 100, className:"dndnode"}} onDragStart={(event) => onDragStart(event, 'MasterList Creator')} draggable>
                     <Box>
                         <AddchartRoundedIcon sx={{width: 50, height: 50}}/>
                         <Typography variant='subtitle2'>MasterList Creator</Typography>
                     </Box>
                 </Button>
-                <Button variant="outlined" sx={{ml:1, width: 100, mt: 2}}>
+                <Button variant="outlined" sx={{ml:1, width: 100, mt: 2}} onDragStart={(event) => onDragStart(event, 'Amazon Adapter')} draggable>
                     <Box>
                         <BackupTableRoundedIcon sx={{width: 50, height: 50}}/>
                         <Typography variant='subtitle2'>Amazon Adapter</Typography>
