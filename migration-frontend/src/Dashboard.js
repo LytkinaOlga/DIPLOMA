@@ -10,6 +10,8 @@ import {
 import Flows from './pages/Flows';
 import AddFlow from './pages/AddFlow';
 import Executions from './pages/Executions';
+import { Component } from 'react';
+import Flow from './pages/Flow';
 
 const theme = createTheme({
   palette: {
@@ -19,24 +21,24 @@ const theme = createTheme({
   }
 })
 
-function Dashboard() {
-  return (
-    <>
-
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Header />
-          <Routes>
-            <Route path="/executions" element={<Executions />} />
-            <Route path="/flows" element={<Flows />} />
-            <Route path="/add" element={<AddFlow />} />
-          </Routes>
-        </ThemeProvider>
-      </BrowserRouter>
-
-
-    </>
-  );
+class Dashboard extends Component {
+  render(){
+    return (
+      <>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <Header />
+            <Routes>
+              <Route path="/executions" element={<Executions />} />
+              <Route path="/flows" element={<Flows />} />
+              <Route path="/add" element={<AddFlow />} />
+              <Route path="/flow/:id" element={<Flow />} />
+            </Routes>
+          </ThemeProvider>
+        </BrowserRouter>
+      </>
+    );
+  }
 }
 
 export default Dashboard;

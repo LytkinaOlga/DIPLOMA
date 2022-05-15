@@ -1,7 +1,6 @@
-import { Box, Button, Container, SpeedDial, SpeedDialIcon, SpeedDialAction } from '@mui/material';
+import { Button } from '@mui/material';
 import * as React from 'react';
 import FlowRenderer from '../components/FlowRenderer';
-import LeftPanel from '../components/LeftPanel';
 import RightPanel from '../components/RightPanel';
 
 import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
@@ -18,8 +17,7 @@ const actions = [
 
 export default function AddFlow() {
     return (
-        <>
-            
+        <>            
             <FlowRenderer />
             <RightPanel />
             <Button
