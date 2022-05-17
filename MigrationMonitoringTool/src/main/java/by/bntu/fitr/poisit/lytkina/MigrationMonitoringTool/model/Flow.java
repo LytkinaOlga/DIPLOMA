@@ -19,7 +19,7 @@ public class Flow {
         return id;
     }
 
-    @Column(name = "title")
+    @Column(name = "name")
     public String getName() {
         return name;
     }
