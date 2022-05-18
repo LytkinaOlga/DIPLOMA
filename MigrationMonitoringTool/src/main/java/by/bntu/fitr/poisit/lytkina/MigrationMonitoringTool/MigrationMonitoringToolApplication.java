@@ -1,15 +1,31 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.FlowRepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPAEdgeRepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPAFlowRepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPANodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
+
+import java.util.Collection;
 
 @SpringBootApplication
-public class MigrationMonitoringToolApplication {
+public class MigrationMonitoringToolApplication implements CommandLineRunner {
+	@Autowired
+	JPAFlowRepository jpaFlowRepository;
+
+	@Autowired
+	JPANodeRepository nodeRepository;
+
+	@Autowired
+	JPAEdgeRepository edgeRepository;
+
 	@Autowired
 	FlowRepository flowRepository;
 
@@ -19,8 +35,30 @@ public class MigrationMonitoringToolApplication {
 	}
 
 	public void run(String... args) throws Exception {
-		Flow flow = new Flow();
-		flow.setName("michFlow");
-		flowRepository.save(flow);
+		generateData();
+		Collection<Flow> flows = flowRepository.findAll();
+		System.out.println("ok");
+	}
+
+	private void generateData() {
+		FlowJPA flow = new FlowJPA();
+		flow.setName("flow1");
+		flow = jpaFlowRepository.save(flow);
+
+		NodeJPA node1 = new NodeJPA();
+		node1.setName("node1");
+		node1.setFlow(flow);
+
+		NodeJPA node2 = new NodeJPA();
+		node2.setName("node2");
+		node2.setFlow(flow);
+
+		node1 = nodeRepository.save(node1);
+		node2 = nodeRepository.save(node2);
+
+		EdgeJPA edge1 = new EdgeJPA();
+		edge1.setNodeFrom(node1);
+		edge1.setNodeTo(node2);
+		edge1 = edgeRepository.save(edge1);
 	}
 }
