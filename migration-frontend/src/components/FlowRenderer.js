@@ -24,13 +24,11 @@ export default function FlowRenderer(params) {
         },
         {
             id: '2',
-            type: 'output',
             data: { label: 'Test node 2' },
             position: { x: 500, y: 150 }
         },
         {
             id: '3',
-            type: 'output',
             data: { label: 'Test node 3' },
             position: { x: 500, y: 200 }
         }
@@ -40,9 +38,29 @@ export default function FlowRenderer(params) {
         { id: 'e1-2', source: '1', target: '2' }
     ];
 
+    var renderedNodes = null;
+    if (params.nodes == null)
+    {
+        renderedNodes = [];
+    }
+    else
+    {
+        renderedNodes = params.nodes
+    }
+
+    var renderedEdges = null;
+    if (params.edges == null)
+    {
+        renderedEdges = [];
+    }
+    else
+    {
+        renderedEdges = params.edges
+    }
+
     const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState(renderedNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(renderedEdges);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
@@ -79,24 +97,11 @@ export default function FlowRenderer(params) {
         [reactFlowInstance]
     );
     
-    var renderedNodes = null;
-    if (params.nodes == null)
-    {
-        renderedNodes = nodes;
-    }
-    else
-    {
-        renderedNodes = params.nodes
-    }
-    var renderedEdges = null;
-    if (params.edges == null)
-    {
-        renderedEdges = edges;
-    }
-    else
-    {
-        renderedEdges = params.edges
-    }
+    
+    
+    console.log(params.nodes);
+    console.log(myNodes);
+    console.log(params.edges);
 
     function handleClick(){
         FlowService.addFlow(nodes, edges).then((res) => {
@@ -110,8 +115,8 @@ export default function FlowRenderer(params) {
             <ReactFlowProvider>
                 <div ref={reactFlowWrapper} style={{ height: 950 }}>
                     <ReactFlow
-                        nodes={renderedNodes}
-                        edges={renderedEdges}
+                        nodes={nodes}
+                        edges={edges}
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}

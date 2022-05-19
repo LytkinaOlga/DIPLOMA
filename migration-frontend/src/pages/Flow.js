@@ -16,7 +16,9 @@ class Flow extends React.Component {
                     createdDate: "",
                     nodes: [{
                         id: "",
-                        name: "",
+                        data: {
+                            label: "node"
+                        },
                         position: {
                             x: 500,
                             y: 100
@@ -24,8 +26,8 @@ class Flow extends React.Component {
                     }],
                     edges: [{
                         id: "",
-                        from: "",
-                        to: ""
+                        source: "",
+                        target: ""
                     }]
                 }
             ]
@@ -36,13 +38,21 @@ class Flow extends React.Component {
         console.log("ola id: " + this.props.params.id)
         FlowService.getFlowById(this.props.params.id).then((res) => {
             res.data.nodes[0].position = {
-                x: 700,
-                y: 300
+                x: 500,
+                y: 100
             };
+            res.data.nodes[0].data = {
+                label: "voly"
+            };
+            res.data.nodes[0].id = "48";
             res.data.nodes[1].position = {
-                x: 700,
-                y: 350
+                x: 500,
+                y: 150
             }
+            res.data.nodes[1].data= {
+                label: "voly"
+            };
+            res.data.nodes[1].id = "49";
             this.setState({ flow: res.data });
             console.log(res.data)
         })
@@ -51,7 +61,7 @@ class Flow extends React.Component {
     render() {
         const myNodes = [
             {
-                id: '1',
+                id: 1,
                 data: { label: 'Test node' },
                 position: { x: 500, y: 100 }
             },
