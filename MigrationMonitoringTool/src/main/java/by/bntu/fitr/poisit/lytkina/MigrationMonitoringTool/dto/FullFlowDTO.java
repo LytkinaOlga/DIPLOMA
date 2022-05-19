@@ -1,15 +1,11 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
@@ -22,14 +18,14 @@ public class FullFlowDTO {
     )
     private Date creationDate;
 
-    private List<NodeDTO> nodes;
+    private Collection<NodeDTO> nodes;
 
-    private List<EdgeDTO> edges;
+    private Collection<EdgeDTO> edges;
 
     public FullFlowDTO(Flow flow) {
         this.id = flow.getId();
         this.name = flow.getName();
-        this.creationDate = flow.getCreatedDate();
+        this.creationDate = flow.getCreationDate();
         this.nodes = flow.getNodes().stream()
             .map(NodeDTO::new)
             .collect(Collectors.toList());

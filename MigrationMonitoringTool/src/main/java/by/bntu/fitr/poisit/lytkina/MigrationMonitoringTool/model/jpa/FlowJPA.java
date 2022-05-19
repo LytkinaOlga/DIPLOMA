@@ -1,5 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,10 +21,16 @@ public class FlowJPA {
     private String name;
 
     @Temporal(TemporalType.TIME)
-    private Date createdDate;
+    private Date creationDate;
+
+    public FlowJPA(Flow flow) {
+        this.id = flow.getId();
+        this.name = flow.getName();
+        this.creationDate = flow.getCreationDate();
+    }
 
     @PrePersist
     void createdAt() {
-        this.createdDate = new Date();
+        this.creationDate = new Date();
     }
 }

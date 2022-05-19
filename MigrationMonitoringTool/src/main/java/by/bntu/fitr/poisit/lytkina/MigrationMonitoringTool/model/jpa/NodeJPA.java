@@ -1,6 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +21,13 @@ public class NodeJPA {
     @ManyToOne
     @JoinColumn(name = "flow_id")
     private FlowJPA flow;
+
+    public NodeJPA(Long id) {
+        this.id = id;
+    }
+
+    public NodeJPA(NodeDTO nodeDTO) {
+        this.id = nodeDTO.getId();
+        this.name = nodeDTO.getName();
+    }
 }

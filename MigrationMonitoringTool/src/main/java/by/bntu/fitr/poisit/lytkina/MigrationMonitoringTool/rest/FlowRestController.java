@@ -35,26 +35,24 @@ public class FlowRestController {
         return new ResponseEntity<>(allFlowPreviewDTOS, HttpStatus.OK);
     }
 
-    @GetMapping("/flows2")
-    public ResponseEntity<List<FullFlowDTO>> getFullFlows() {
-        Collection<Flow> allFlows = flowRepository.findAll();
-        List<FullFlowDTO> allFlowDTOs = allFlows.stream()
-            .map(FullFlowDTO::new)
-            .collect(Collectors.toList());
-        return new ResponseEntity<>(allFlowDTOs, HttpStatus.OK);
-    }
-
     @GetMapping("/flow/{id}")
-    public ResponseEntity<Flow> getFullFlow(@PathVariable("id") long flowId) {
+    public ResponseEntity<FullFlowDTO> getFullFlow(@PathVariable("id") long flowId) {
         Optional<Flow> flow = flowRepository.findById(flowId);
         return flow
-            .map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+            .map(f -> new ResponseEntity<>(new FullFlowDTO(f), HttpStatus.OK))
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/flow")
-    public ResponseEntity<Long> getFlow(@RequestBody FlowJPA flow) {
+    @PostMapping("/flow/preview")
+    public ResponseEntity<Long> saveFlowPreview(@RequestBody FlowJPA flow) {
         flow = jpaFlowRepository.save(flow);
+        return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
+    }
+
+    @PostMapping("/flow")
+    public ResponseEntity<Long> saveFullFlow(@RequestBody FullFlowDTO flowDTO) {
+        Flow flow = new Flow(flowDTO);
+        flow = flowRepository.save(flow);
         return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
     }
 
