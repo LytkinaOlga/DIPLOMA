@@ -7,4 +7,5 @@ import java.util.Collection;
 
 public interface JPAEdgeRepository extends CrudRepository<EdgeJPA, Long> {
     Collection<EdgeJPA> findAllByNodeFromId(Long nodeFromId);
+    Collection<EdgeJPA> deleteAllByNodeFromId(Long nodeFromId);
 }

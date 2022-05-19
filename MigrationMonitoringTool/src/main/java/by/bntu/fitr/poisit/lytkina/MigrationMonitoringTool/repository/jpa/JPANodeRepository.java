@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface JPANodeRepository extends CrudRepository<NodeJPA, Long> {
     Collection<NodeJPA> findAllByFlowId(Long flowId);
+    Collection<NodeJPA> deleteAllByFlowId(Long flowId);
 }

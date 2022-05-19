@@ -2,16 +2,18 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class EdgeDTO {
     private Long id;
-    private Long from;
-    private Long to;
+    private Long source;
+    private Long target;
 
     public EdgeDTO(EdgeJPA edgeJPA) {
         this.id = edgeJPA.getId();
-        this.from = edgeJPA.getNodeFrom().getId();
-        this.to = edgeJPA.getNodeTo().getId();
+        this.source = edgeJPA.getNodeFrom().getId();
+        this.target = edgeJPA.getNodeTo().getId();
     }
 }

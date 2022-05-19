@@ -29,6 +29,10 @@ public class FlowJPA {
         this.creationDate = flow.getCreationDate();
     }
 
+    public FlowJPA(Long id) {
+        this.id = id;
+    }
+
     @PrePersist
     void createdAt() {
         this.creationDate = new Date();

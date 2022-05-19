@@ -30,4 +30,12 @@ public class NodeJPA {
         this.id = nodeDTO.getId();
         this.name = nodeDTO.getName();
     }
+
+    public void setFlow(FlowJPA flow) {
+        this.flow = flow;
+    }
+
+    public void setFlow(Long id) {
+        this.flow = new FlowJPA(id);
+    }
 }
