@@ -24,8 +24,8 @@ class Flow extends React.Component {
                     }],
                     edges: [{
                         id: "",
-                        nodeFrom: "",
-                        nodeTo: ""
+                        from: "",
+                        to: ""
                     }]
                 }
             ]
@@ -70,7 +70,8 @@ class Flow extends React.Component {
         ];
         return (
             <div>
-                <FlowRenderer nodes = {this.state.flow.nodes}/>
+                <FlowRenderer nodes = {this.state.flow.nodes}
+                              edges = {this.state.flow.edges}/>
             </div>
         )
     }

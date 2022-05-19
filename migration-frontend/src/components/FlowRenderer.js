@@ -88,6 +88,15 @@ export default function FlowRenderer(params) {
     {
         renderedNodes = params.nodes
     }
+    var renderedEdges = null;
+    if (params.edges == null)
+    {
+        renderedEdges = edges;
+    }
+    else
+    {
+        renderedEdges = params.edges
+    }
 
     function handleClick(){
         FlowService.addFlow(nodes, edges).then((res) => {
@@ -102,7 +111,7 @@ export default function FlowRenderer(params) {
                 <div ref={reactFlowWrapper} style={{ height: 950 }}>
                     <ReactFlow
                         nodes={renderedNodes}
-                        edges={edges}
+                        edges={renderedEdges}
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
