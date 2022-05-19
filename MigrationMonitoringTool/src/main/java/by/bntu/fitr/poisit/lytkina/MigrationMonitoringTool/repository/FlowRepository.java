@@ -10,9 +10,7 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPANod
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,6 +33,25 @@ public class FlowRepository {
     public Optional<Flow> findById(Long flowId) {
         Optional<FlowJPA> flowJPA = flowRepository.findById(flowId);
         return flowJPA.map(this::loadFlowNodesAndEdges);
+    }
+
+    public Flow save(Flow flow) {
+        FlowJPA flowJPA = new FlowJPA(flow);
+        flowJPA = flowRepository.save(flowJPA);
+
+        List<NodeJPA> nodes = flow.getNodes().stream()
+            .map(nodeRepository::save)
+            .collect(Collectors.toList());
+
+        List<EdgeJPA> edges = flow.getEdges().stream()
+            .map(edgeRepository::save)
+            .collect(Collectors.toList());
+
+        flow.setId(flowJPA.getId());
+        flow.setNodes(nodes);
+        flow.setEdges(edges);
+
+        return flow;
     }
 
     private Flow loadFlowNodesAndEdges(FlowJPA flowJPA) {

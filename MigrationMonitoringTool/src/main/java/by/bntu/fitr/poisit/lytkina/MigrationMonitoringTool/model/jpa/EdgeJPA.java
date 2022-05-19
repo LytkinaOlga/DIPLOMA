@@ -1,5 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.EdgeDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,4 +24,10 @@ public class EdgeJPA {
     @OneToOne
     @JoinColumn(name = "node_to")
     private NodeJPA nodeTo;
+
+    public EdgeJPA(EdgeDTO edgeDTO) {
+        this.id = edgeDTO.getId();
+        this.nodeFrom = new NodeJPA(edgeDTO.getFrom());
+        this.nodeTo = new NodeJPA(edgeDTO.getTo());
+    }
 }
