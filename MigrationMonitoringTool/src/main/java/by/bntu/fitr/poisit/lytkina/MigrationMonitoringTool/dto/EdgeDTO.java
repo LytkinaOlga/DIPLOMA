@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class EdgeDTO {
-    private Long id;
-    private Long source;
-    private Long target;
+    private String id;
+    private String source;
+    private String target;
 
     public EdgeDTO(EdgeJPA edgeJPA) {
-        this.id = edgeJPA.getId();
-        this.source = edgeJPA.getNodeFrom().getId();
-        this.target = edgeJPA.getNodeTo().getId();
+        this.id = edgeJPA.getId().toString();
+        this.source = edgeJPA.getNodeFrom().getId().toString();
+        this.target = edgeJPA.getNodeTo().getId().toString();
     }
 }

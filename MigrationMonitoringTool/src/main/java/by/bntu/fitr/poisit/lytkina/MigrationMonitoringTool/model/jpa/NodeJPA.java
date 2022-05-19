@@ -32,7 +32,7 @@ public class NodeJPA {
     }
 
     public NodeJPA(NodeDTO nodeDTO) {
-        this.id = nodeDTO.getId();
+        this.id = Long.valueOf(nodeDTO.getId());
         this.name = nodeDTO.getName();
         if (nodeDTO.getPosition() != null) {
             this.setX(nodeDTO.getPosition().getX());
