@@ -11,12 +11,6 @@ import FlowService from '../services/FlowService';
 
 class AddFlow extends React.Component {
 
-    handleClick  = () => {
-        FlowService.addFlow().then((res) => {
-            console.log(res.data);
-        })
-        alert("Hi");
-    }
 
     render(){
         return (

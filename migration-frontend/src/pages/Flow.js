@@ -13,26 +13,36 @@ class Flow extends React.Component {
                 {
                     id: "",
                     name: "",
-                    creationDate: "",
+                    createdDate: "",
                     nodes: [{
                         id: "",
-                        name: ""
+                        name: "",
+                        position: {
+                            x: 500,
+                            y: 100
+                        }
                     }],
                     edges: [{
                         id: "",
-                        from: "",
-                        to: ""
+                        nodeFrom: "",
+                        nodeTo: ""
                     }]
                 }
             ]
         }
-    }
-
-    
+    }    
 
     componentDidMount() {
         console.log("ola id: " + this.props.params.id)
         FlowService.getFlowById(this.props.params.id).then((res) => {
+            res.data.nodes[0].position = {
+                x: 700,
+                y: 300
+            };
+            res.data.nodes[1].position = {
+                x: 700,
+                y: 350
+            }
             this.setState({ flow: res.data });
             console.log(res.data)
         })

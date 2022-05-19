@@ -18,7 +18,7 @@ class FlowService {
         console.log(nodes);
         console.log(edges);
         return axios.post(URL_POST_ADD_FLOW, {
-            name: "test ola444",
+            name: "test ola555",
             nodes: nodes,
             edges: edges
         })
