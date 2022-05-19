@@ -9,6 +9,7 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPAFlo
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPANodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,20 +36,37 @@ public class FlowRepository {
         return flowJPA.map(this::loadFlowNodesAndEdges);
     }
 
-    public Flow save(Flow flow) {
+    @Transactional
+    public Flow recreate(Flow flow) {
+        removeFlowElements(flow);
+
         FlowJPA flowJPA = new FlowJPA(flow);
         flowJPA = flowRepository.save(flowJPA);
+        final Long flowId = flowJPA.getId();
 
-        List<NodeJPA> nodes = flow.getNodes().stream()
-            .map(nodeRepository::save)
-            .collect(Collectors.toList());
+        Collection<NodeJPA> oldNodes = flow.getNodes();
+        Map<Long, NodeJPA> newNodes = oldNodes.stream()
+            .peek(n -> n.setFlow(flowId))
+            .collect(Collectors.toMap(
+                NodeJPA::getId,
+                nodeRepository::save
+            ));
 
         List<EdgeJPA> edges = flow.getEdges().stream()
-            .map(edgeRepository::save)
+            .map(oldEdge -> {
+                NodeJPA newFrom = newNodes.get(oldEdge.getNodeFrom().getId());
+                NodeJPA newTo = newNodes.get(oldEdge.getNodeTo().getId());
+
+                EdgeJPA newEdge = new EdgeJPA();
+                newEdge.setNodeFrom(newFrom);
+                newEdge.setNodeTo(newTo);
+
+                return edgeRepository.save(newEdge);
+            })
             .collect(Collectors.toList());
 
         flow.setId(flowJPA.getId());
-        flow.setNodes(nodes);
+        flow.setNodes(newNodes.values());
         flow.setEdges(edges);
 
         return flow;
@@ -63,5 +81,16 @@ public class FlowRepository {
         flow.setNodes(nodes);
         flow.setEdges(edges);
         return flow;
+    }
+
+    public void removeFlowElements(Flow flow) {
+        if (flow.getId() == null) {
+            return;
+        }
+        Collection<NodeJPA> removedNodes = nodeRepository.findAllByFlowId(flow.getId());
+        removedNodes.forEach(
+            node -> edgeRepository.deleteAllByNodeFromId(node.getId())
+        );
+        nodeRepository.deleteAll(removedNodes);
     }
 }

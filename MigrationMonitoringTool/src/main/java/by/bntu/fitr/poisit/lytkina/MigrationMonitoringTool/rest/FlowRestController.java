@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,7 +51,7 @@ public class FlowRestController {
     @PostMapping("/flow")
     public ResponseEntity<Long> saveFullFlow(@RequestBody FullFlowDTO flowDTO) {
         Flow flow = new Flow(flowDTO);
-        flow = flowRepository.save(flow);
+        flow = flowRepository.recreate(flow);
         return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
     }
 

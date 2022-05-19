@@ -2,20 +2,25 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @Data
+@NoArgsConstructor
 public class FullFlowDTO {
     private Long id;
     private String name;
-    @JsonFormat(
-        shape = JsonFormat.Shape.STRING,
-        pattern = "dd-MM-yyyy mich hh:mm:ss"
-    )
+
+    @JsonIgnore
+//    @JsonFormat(
+//        shape = JsonFormat.Shape.STRING,
+//        pattern = "dd-MM-yyyy mich hh:mm:ss"
+//    )
     private Date creationDate;
 
     private Collection<NodeDTO> nodes;
