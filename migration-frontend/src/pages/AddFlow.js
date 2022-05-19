@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import * as React from 'react';
 import FlowRenderer from '../components/FlowRenderer';
 import RightPanel from '../components/RightPanel';
@@ -7,25 +7,26 @@ import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import PrintIcon from '@mui/icons-material/Print';
 import ShareIcon from '@mui/icons-material/Share';
+import FlowService from '../services/FlowService';
 
-const actions = [
-    { icon: <FileCopyIcon />, name: 'Copy' },
-    { icon: <SaveIcon />, name: 'Save' },
-    { icon: <PrintIcon />, name: 'Print' },
-    { icon: <ShareIcon />, name: 'Share' },
-];
+class AddFlow extends React.Component {
 
-export default function AddFlow() {
-    return (
-        <>            
-            <FlowRenderer />
-            <RightPanel />
-            <Button
-                sx={{ position: 'absolute', bottom: 50, right: 300 }}
-                variant="contained"
-            >
-                EXECUTE
-            </Button>
-        </>
-    );
+    handleClick  = () => {
+        FlowService.addFlow().then((res) => {
+            console.log(res.data);
+        })
+        alert("Hi");
+    }
+
+    render(){
+        return (
+            <>            
+                <FlowRenderer />
+                <RightPanel />
+                
+            </>
+        );
+    }    
 }
+
+export default AddFlow;

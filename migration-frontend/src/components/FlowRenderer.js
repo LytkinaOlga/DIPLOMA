@@ -1,3 +1,4 @@
+import { Button, Typography } from '@mui/material';
 import React, { useState, useRef, useCallback } from 'react';
 import ReactFlow, {
     ReactFlowProvider,
@@ -7,12 +8,13 @@ import ReactFlow, {
     Controls,
     Background,
 } from 'react-flow-renderer';
+import FlowService from '../services/FlowService';
 import LeftPanel from './LeftPanel';
 
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+const getId = () => `${id++}`;
 
-export default function FlowRenderer() {
+export default function FlowRenderer(params) {
 
     const myNodes = [
         {
@@ -76,13 +78,30 @@ export default function FlowRenderer() {
         },
         [reactFlowInstance]
     );
+    
+    var renderedNodes = null;
+    if (params.nodes == null)
+    {
+        renderedNodes = nodes;
+    }
+    else
+    {
+        renderedNodes = params.nodes
+    }
 
-    return (
+    function handleClick(){
+        FlowService.addFlow(nodes, edges).then((res) => {
+            console.log(res.data);
+        })
+        alert("Hi");
+    }
+
+    return (        
         <div >
             <ReactFlowProvider>
                 <div ref={reactFlowWrapper} style={{ height: 950 }}>
                     <ReactFlow
-                        nodes={nodes}
+                        nodes={renderedNodes}
                         edges={edges}
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
@@ -97,6 +116,19 @@ export default function FlowRenderer() {
                     </ReactFlow>
                 </div>
                 <LeftPanel />
+                <Button
+                    sx={{ position: 'absolute', bottom: 50, right: 300 , zIndex: 4}}
+                    variant="contained"
+                >
+                    <Typography>EXECUTE</Typography>
+                </Button>
+                <Button
+                    sx={{ position: 'absolute', bottom: 50, right: 430 , zIndex: 4}}
+                    variant="contained"
+                    onClick = {handleClick}
+                >
+                    <Typography>SAVE</Typography>
+                </Button>
             </ReactFlowProvider>
         </div >
     );

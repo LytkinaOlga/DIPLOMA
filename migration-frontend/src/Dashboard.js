@@ -6,12 +6,14 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  useParams
 } from "react-router-dom";
 import Flows from './pages/Flows';
 import AddFlow from './pages/AddFlow';
 import Executions from './pages/Executions';
 import { Component } from 'react';
 import Flow from './pages/Flow';
+import TempFlow from './components/TempFlow';
 
 const theme = createTheme({
   palette: {
@@ -32,7 +34,7 @@ class Dashboard extends Component {
               <Route path="/executions" element={<Executions />} />
               <Route path="/flows" element={<Flows />} />
               <Route path="/add" element={<AddFlow />} />
-              <Route path="/flow/:id" element={<Flow />} />
+              <Route exact path="/flow/:id" element={<TempFlow />} />
             </Routes>
           </ThemeProvider>
         </BrowserRouter>
