@@ -1,13 +1,13 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 
-public class FlowPreview {
+public class FlowPreviewDTO {
     private Long id;
     private String name;
     //todo: creation date
 
-    public FlowPreview(Flow flow) {
+    public FlowPreviewDTO(FlowJPA flow) {
         this.id = flow.getId();
         this.name = flow.getName();
     }
