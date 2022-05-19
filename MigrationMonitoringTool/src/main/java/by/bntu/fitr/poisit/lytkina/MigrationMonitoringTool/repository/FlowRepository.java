@@ -46,10 +46,14 @@ public class FlowRepository {
 
         Collection<NodeJPA> oldNodes = flow.getNodes();
         Map<Long, NodeJPA> newNodes = oldNodes.stream()
-            .peek(n -> n.setFlow(flowId))
             .collect(Collectors.toMap(
                 NodeJPA::getId,
-                nodeRepository::save
+                oldNode -> {
+                    NodeJPA newNode = new NodeJPA(oldNode);
+                    newNode.setId(null);
+                    newNode.setFlow(flowId);
+                    return nodeRepository.save(newNode);
+                }
             ));
 
         List<EdgeJPA> edges = flow.getEdges().stream()
@@ -65,7 +69,7 @@ public class FlowRepository {
             })
             .collect(Collectors.toList());
 
-        flow.setId(flowJPA.getId());
+        flow.setId(flowId);
         flow.setNodes(newNodes.values());
         flow.setEdges(edges);
 

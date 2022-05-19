@@ -25,8 +25,8 @@ public class EdgeJPA {
     private NodeJPA nodeTo;
 
     public EdgeJPA(EdgeDTO edgeDTO) {
-        this.id = edgeDTO.getId();
-        this.nodeFrom = new NodeJPA(edgeDTO.getSource());
-        this.nodeTo = new NodeJPA(edgeDTO.getTarget());
+        this.id = Long.valueOf(edgeDTO.getId());
+        this.nodeFrom = new NodeJPA(Long.valueOf(edgeDTO.getSource()));
+        this.nodeTo = new NodeJPA(Long.valueOf(edgeDTO.getTarget()));
     }
 }
