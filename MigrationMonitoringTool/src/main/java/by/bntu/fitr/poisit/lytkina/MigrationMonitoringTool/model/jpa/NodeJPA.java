@@ -22,6 +22,11 @@ public class NodeJPA {
     @JoinColumn(name = "flow_id")
     private FlowJPA flow;
 
+    @Column(name = "position_x")
+    private double x;
+    @Column(name = "position_y")
+    private double y;
+
     public NodeJPA(Long id) {
         this.id = id;
     }
@@ -29,6 +34,18 @@ public class NodeJPA {
     public NodeJPA(NodeDTO nodeDTO) {
         this.id = nodeDTO.getId();
         this.name = nodeDTO.getName();
+        if (nodeDTO.getPosition() != null) {
+            this.setX(nodeDTO.getPosition().getX());
+            this.setY(nodeDTO.getPosition().getY());
+        }
+    }
+
+    public NodeJPA(NodeJPA orig) {
+        this.setId(orig.getId());
+        this.setName(orig.getName());
+        this.setFlow(orig.getFlow());
+        this.setX(orig.getX());
+        this.setY(orig.getY());
     }
 
     public void setFlow(FlowJPA flow) {
@@ -38,4 +55,5 @@ public class NodeJPA {
     public void setFlow(Long id) {
         this.flow = new FlowJPA(id);
     }
+
 }

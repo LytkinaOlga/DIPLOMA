@@ -48,10 +48,14 @@ public class MigrationMonitoringToolApplication implements CommandLineRunner {
 		NodeJPA node1 = new NodeJPA();
 		node1.setName("node1");
 		node1.setFlow(flow);
+		node1.setX(100.1);
+		node1.setY(100.1);
 
 		NodeJPA node2 = new NodeJPA();
 		node2.setName("node2");
 		node2.setFlow(flow);
+		node2.setX(200.2);
+		node2.setY(200.2);
 
 		node1 = nodeRepository.save(node1);
 		node2 = nodeRepository.save(node2);
