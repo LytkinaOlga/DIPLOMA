@@ -35,6 +35,7 @@ public class FlowJPA {
 
     @PrePersist
     void createdAt() {
+        System.out.println("Persisted!");
         this.creationDate = new Date();
     }
 }

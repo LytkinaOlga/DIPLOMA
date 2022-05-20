@@ -51,7 +51,7 @@ public class FlowRestController {
     @PostMapping("/flow")
     public ResponseEntity<Long> saveFullFlow(@RequestBody FullFlowDTO flowDTO) {
         Flow flow = new Flow(flowDTO);
-        flow = flowRepository.recreate(flow);
+        flow = flowRepository.updateFlow(flow);
         return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
     }
 

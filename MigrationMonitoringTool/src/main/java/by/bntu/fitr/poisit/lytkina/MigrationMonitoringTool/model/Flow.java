@@ -34,4 +34,19 @@ public class Flow {
         this.setNodes(mapCollect(flowDTO.getNodes(), NodeJPA::new));
         this.setEdges(mapCollect(flowDTO.getEdges(), EdgeJPA::new));
     }
+
+    public void merge(Flow other) {
+        if (other.getName() != null) {
+            this.name = other.getName();
+        }
+        if (other.getCreationDate() != null) {
+            this.creationDate = other.getCreationDate();
+        }
+        if (other.getNodes() != null) {
+            this.setNodes(other.getNodes());
+        }
+        if (other.getEdges() != null) {
+            this.setEdges(other.getEdges());
+        }
+    }
 }

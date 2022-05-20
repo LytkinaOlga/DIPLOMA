@@ -36,12 +36,14 @@ public class FlowRepository {
         return flowJPA.map(this::loadFlowNodesAndEdges);
     }
 
+    /**
+     * Recreates nodes and edges.
+     */
     @Transactional
-    public Flow recreate(Flow flow) {
+    public Flow updateFlow(Flow flow) {
         removeFlowElements(flow);
 
-        FlowJPA flowJPA = new FlowJPA(flow);
-        flowJPA = flowRepository.save(flowJPA);
+        FlowJPA flowJPA = updateFlowEntity(flow);
         final Long flowId = flowJPA.getId();
 
         Collection<NodeJPA> oldNodes = flow.getNodes();
@@ -96,5 +98,19 @@ public class FlowRepository {
             node -> edgeRepository.deleteAllByNodeFromId(node.getId())
         );
         nodeRepository.deleteAll(removedNodes);
+    }
+
+    private FlowJPA updateFlowEntity(Flow flow) {
+        Optional<FlowJPA> flowJPAOptional = flowRepository.findById(flow.getId());
+        if (flowJPAOptional.isPresent()) {
+            FlowJPA flowJPA = flowJPAOptional.get();
+            if (flow.getName() != null) {
+                flowJPA.setName(flow.getName());
+            }
+            return flowJPA;
+        } else {
+            FlowJPA newFlow = new FlowJPA(flow);
+            return flowRepository.save(newFlow);
+        }
     }
 }
