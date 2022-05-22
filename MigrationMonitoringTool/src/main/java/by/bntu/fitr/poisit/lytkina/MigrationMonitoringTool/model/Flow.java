@@ -6,10 +6,9 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.CollectionHelper.mapCollect;
 
@@ -25,6 +24,12 @@ public class Flow {
         this.id = flowJPA.getId();
         this.name = flowJPA.getName();
         this.creationDate = flowJPA.getCreationDate();
+        this.nodes = flowJPA.getNodes();
+//        if (flowJPA.getNodes() != null) {
+//            Collection<EdgeJPA> edges = new ArrayList<>();
+//            nodes.forEach(n -> edges.addAll(n.getOutgoingEdges()));
+//            this.edges = edges;
+//        }
     }
 
     public Flow(FullFlowDTO flowDTO) {
@@ -35,7 +40,7 @@ public class Flow {
         this.setEdges(mapCollect(flowDTO.getEdges(), EdgeJPA::new));
     }
 
-    public void merge(Flow other) {
+    public void shallowMerge(Flow other) {
         if (other.getName() != null) {
             this.name = other.getName();
         }

@@ -13,7 +13,7 @@ public class EdgeDTO {
 
     public EdgeDTO(EdgeJPA edgeJPA) {
         this.id = edgeJPA.getId().toString();
-        this.source = edgeJPA.getNodeFrom().getId().toString();
-        this.target = edgeJPA.getNodeTo().getId().toString();
+        this.source = edgeJPA.getNodeFrom().toString();
+        this.target = edgeJPA.getNodeTo().toString();
     }
 }

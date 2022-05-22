@@ -5,7 +5,7 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FullFlowDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.FlowRepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPAFlowRepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +20,10 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:3000")
 public class FlowRestController {
     @Autowired
-    JPAFlowRepository jpaFlowRepository;
+    FlowJPARepository flowJPARepository;
 
     @Autowired
     FlowRepository flowRepository;
-
-    @GetMapping("/flows")
-    public ResponseEntity<List<FlowPreviewDTO>> getFlows() {
-        List<FlowJPA> allFlows = jpaFlowRepository.findAll();
-        List<FlowPreviewDTO> allFlowPreviewDTOS = allFlows.stream()
-            .map(FlowPreviewDTO::new)
-            .collect(Collectors.toList());
-        return new ResponseEntity<>(allFlowPreviewDTOS, HttpStatus.OK);
-    }
 
     @GetMapping("/flow/{id}")
     public ResponseEntity<FullFlowDTO> getFullFlow(@PathVariable("id") long flowId) {
@@ -42,9 +33,20 @@ public class FlowRestController {
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/flows")
+    public ResponseEntity<List<FlowPreviewDTO>> getFlows() {
+        List<FlowJPA> allFlows = flowJPARepository.findAll();
+        List<FlowPreviewDTO> allFlowPreviewDTOS = allFlows.stream()
+            .map(FlowPreviewDTO::new)
+            .collect(Collectors.toList());
+        return new ResponseEntity<>(allFlowPreviewDTOS, HttpStatus.OK);
+    }
+
+
+
     @PostMapping("/flow/preview")
     public ResponseEntity<Long> saveFlowPreview(@RequestBody FlowJPA flow) {
-        flow = jpaFlowRepository.save(flow);
+        flow = flowJPARepository.save(flow);
         return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
     }
 
@@ -57,7 +59,7 @@ public class FlowRestController {
 
     @PostMapping("/flows/delete")
     public ResponseEntity<Long> getFlow() {
-        jpaFlowRepository.deleteAll();
+        flowJPARepository.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
