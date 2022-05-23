@@ -2,8 +2,10 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "tasks")
@@ -16,4 +18,13 @@ public class TaskJPA {
 
     @Column(name = "class_name")
     private String className;
+
+    @Column(name = "name")
+    private String name;
+
+    @OneToMany(
+        mappedBy = "task",
+        cascade = CascadeType.ALL
+    )
+    private Collection<TaskParameterJPA> taskParameters;
 }

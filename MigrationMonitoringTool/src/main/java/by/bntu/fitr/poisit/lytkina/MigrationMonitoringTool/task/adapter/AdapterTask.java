@@ -1,6 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.Task;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.AbstractTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +11,15 @@ import java.util.Map;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.MASTER_LIST_TABLE_PREFIX;
 
-public class AdapterTask implements Task {
+public class AdapterTask extends AbstractTask {
     private static final String START_PATH = "/start";
     private static final String STATUS_PATH = "/status";
     private static final String STOP_PATH = "/stop";
 
     @Override
-    public void run(Map<String, String> taskParameters) {
-        this.taskParameters = taskParameters;
+    public void run() {
+        state = STATE_RUNNING;
+
         String executionId = taskParameters.get(ParamNames.CURRENT_EXECUTION_ID);
         String nodeName = taskParameters.get(ParamNames.NODE_NAME);
         String masterListTable = MASTER_LIST_TABLE_PREFIX + executionId;
@@ -40,15 +41,19 @@ public class AdapterTask implements Task {
 
     private void waitTillFinished() {
         String nodeName = taskParameters.get(ParamNames.NODE_NAME);
-        AdapterStatus status = getAdapterStatus();
-        while (AdapterStatus.RUNNING.equals(status)) {
-            logger.debug("Node {} adapter status: {}", nodeName, status);
+        AdapterStatus adapterExeuctionStatus = getAdapterStatus();
+        while (AdapterStatus.RUNNING.equals(adapterExeuctionStatus)) {
+            logger.debug("Node {} adapter status: {}", nodeName, adapterExeuctionStatus);
             try {
                 Thread.sleep(POLL_INTERVAL);
+                if (state != STATE_RUNNING) {
+                    logger.debug("Adapter {} was aborted during response waiting", nodeName);
+                    break;
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            status = getAdapterStatus();
+            adapterExeuctionStatus = getAdapterStatus();
         }
     }
 
@@ -79,8 +84,13 @@ public class AdapterTask implements Task {
 
     }
 
+    @Override
+    public void forceComplete() {
+        cancel();
+        super.forceComplete();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AdapterTask.class);
     private final RestTemplate restTemplate = new RestTemplate();
-    private Map<String, String> taskParameters;
     private static final long POLL_INTERVAL = 3000L;
 }

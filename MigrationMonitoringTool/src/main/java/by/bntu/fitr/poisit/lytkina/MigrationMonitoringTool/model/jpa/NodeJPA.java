@@ -1,13 +1,11 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.NodeExecutionStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Set;
 
 @Entity
@@ -44,6 +42,9 @@ public class NodeJPA {
     private double x = 100.1;
     @Column(name = "position_y")
     private double y = 200.2;
+
+    @Column(name = "status")
+    private NodeExecutionStatus status = NodeExecutionStatus.NOT_STARTED;
 
     public NodeJPA(Long id) {
         this.id = id;

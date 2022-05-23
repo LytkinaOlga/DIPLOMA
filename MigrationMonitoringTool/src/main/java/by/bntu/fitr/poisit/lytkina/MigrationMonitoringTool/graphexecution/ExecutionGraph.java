@@ -7,19 +7,32 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class ExecutionGraph {
+    private static final Map<Long, ExecutionGraph> createdExecutions = new HashMap<>();
+
     @Autowired
     ObjectProvider<NodeExecutionWrapper> nodeExecutionWrapperObjectProvider;
 
     private final Long executionId;
     private final Collection<GraphNode> startNodes;
+    private final Map<Long, NodeExecutionWrapper> nodeExecutions;
 
     public ExecutionGraph(Long executionId, Collection<GraphNode> startNodes) {
         this.executionId = executionId;
         this.startNodes = startNodes;
+        nodeExecutions = new HashMap<>();
+        createdExecutions.put(executionId, this);
+    }
+
+    public static ExecutionGraph getByExecutionId(Long executionId) {
+        return createdExecutions.get(executionId);
     }
 
     public CompletableFuture<Void> run() {
         return buildExecutionFuture();
+    }
+
+    public void forceCompleteNode(Long nodeId) {
+        nodeExecutions.get(nodeId).forceCompleteTask();
     }
 
     private CompletableFuture<Void> buildExecutionFuture() {
@@ -46,16 +59,16 @@ public class ExecutionGraph {
                         break outer;
                     }
                 }
+                NodeExecutionWrapper executionWrapper = nodeExecutionWrapperObjectProvider.getObject(this, currentNode);
                 CompletableFuture<Void> nodeFuture = nodeDependencies.isEmpty() ?
-                    CompletableFuture.runAsync(
-                        nodeExecutionWrapperObjectProvider.getObject(this, currentNode)
-                    )
+                    CompletableFuture.runAsync(executionWrapper)
                     :
                     CompletableFuture.allOf(
                         nodeDependencies.toArray(new CompletableFuture[] {})
-                    ).thenRun(nodeExecutionWrapperObjectProvider.getObject(this, currentNode));
+                    ).thenRun(executionWrapper);
 
                 nodeFutures.put(currentNode, nodeFuture);
+                nodeExecutions.put(currentNode.getNodeId(), executionWrapper);
                 if (currentNode.getOutgoingNodes() == null || currentNode.getOutgoingNodes().isEmpty()) {
                     leafFutures.add(nodeFuture);
                 } else {
