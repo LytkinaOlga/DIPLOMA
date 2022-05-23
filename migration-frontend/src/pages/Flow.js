@@ -44,7 +44,6 @@ class Flow extends React.Component {
             res.data.nodes[0].data = {
                 label: "voly"
             };
-            res.data.nodes[0].id = "48";
             res.data.nodes[1].position = {
                 x: 500,
                 y: 150
@@ -52,7 +51,6 @@ class Flow extends React.Component {
             res.data.nodes[1].data= {
                 label: "voly"
             };
-            res.data.nodes[1].id = "49";
             this.setState({ flow: res.data });
             console.log(res.data)
         })

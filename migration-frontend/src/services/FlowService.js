@@ -6,23 +6,26 @@ const URL_POST_ADD_FLOW = "http://localhost:8090/flow";
 
 class FlowService {
 
-    getFlows(){
+    getFlows() {
         return axios.get(URL_GET_FLOWS);
     }
 
-    getFlowById(id){
+    getFlowById(id) {
         return axios.get(UPL_GET_FLOW_BY_ID + id)
     }
 
-    addFlow(nodes, edges){
+    addFlow(nodes, edges) {
         console.log(nodes);
         console.log(edges);
+
         return axios.post(URL_POST_ADD_FLOW, {
             name: "test ola555",
             nodes: nodes,
             edges: edges
         })
     }
+
+
 }
 
 export default new FlowService()

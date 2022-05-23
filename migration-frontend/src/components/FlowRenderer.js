@@ -7,6 +7,7 @@ import ReactFlow, {
     useEdgesState,
     Controls,
     Background,
+    MiniMap,
 } from 'react-flow-renderer';
 import FlowService from '../services/FlowService';
 import LeftPanel from './LeftPanel';
@@ -59,8 +60,8 @@ export default function FlowRenderer(params) {
     }
 
     const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState(renderedNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(renderedEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
@@ -98,10 +99,6 @@ export default function FlowRenderer(params) {
     );
     
     
-    
-    console.log(params.nodes);
-    console.log(myNodes);
-    console.log(params.edges);
 
     function handleClick(){
         FlowService.addFlow(nodes, edges).then((res) => {
@@ -127,6 +124,7 @@ export default function FlowRenderer(params) {
                     >
                         <Controls />
                         <Background />
+                        <MiniMap/>
                     </ReactFlow>
                 </div>
                 <LeftPanel />

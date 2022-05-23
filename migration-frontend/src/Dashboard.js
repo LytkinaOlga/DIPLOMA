@@ -14,6 +14,7 @@ import Executions from './pages/Executions';
 import { Component } from 'react';
 import Flow from './pages/Flow';
 import TempFlow from './components/TempFlow';
+import TestFlow from './components/TestFlow';
 
 const theme = createTheme({
   palette: {
@@ -24,7 +25,7 @@ const theme = createTheme({
 })
 
 class Dashboard extends Component {
-  render(){
+  render() {
     return (
       <>
         <BrowserRouter>
@@ -35,6 +36,7 @@ class Dashboard extends Component {
               <Route path="/flows" element={<Flows />} />
               <Route path="/add" element={<AddFlow />} />
               <Route exact path="/flow/:id" element={<TempFlow />} />
+              <Route exact path="/test" element={<TestFlow />} />
             </Routes>
           </ThemeProvider>
         </BrowserRouter>
@@ -44,3 +46,5 @@ class Dashboard extends Component {
 }
 
 export default Dashboard;
+
+
