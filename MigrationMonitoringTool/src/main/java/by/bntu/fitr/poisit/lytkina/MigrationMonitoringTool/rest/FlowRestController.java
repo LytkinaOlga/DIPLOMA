@@ -41,7 +41,7 @@ public class FlowRestController {
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/flow/{id}")
+    @PostMapping("/flow")
     public ResponseEntity<Long> saveFullFlow(@RequestBody FullFlowDTO flowDTO) {
         Flow flow = new Flow(flowDTO);
         flow = flowRepository.updateFlow(flow);

@@ -5,14 +5,12 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.EdgeJP
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.TaskJPARepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 @Component
@@ -87,42 +85,42 @@ public class DataGenerator {
         NodeJPA nodeA = new NodeJPA();
         nodeA.setName("A");
         nodeA.setFlow(flow);
-        nodeA.setTaskJPA(manualTask);
+        nodeA.setTask(manualTask);
 
         NodeJPA nodeB = new NodeJPA();
         nodeB.setName("B");
         nodeB.setFlow(flow);
-        nodeB.setTaskJPA(manualTask);
+        nodeB.setTask(manualTask);
 
         NodeJPA nodeC = new NodeJPA();
         nodeC.setName("C");
         nodeC.setFlow(flow);
-        nodeC.setTaskJPA(taskJPA);
+        nodeC.setTask(taskJPA);
 
         NodeJPA nodeD = new NodeJPA();
         nodeD.setName("D");
         nodeD.setFlow(flow);
-        nodeD.setTaskJPA(taskJPA);
+        nodeD.setTask(taskJPA);
 
         NodeJPA nodeE = new NodeJPA();
         nodeE.setName("E");
         nodeE.setFlow(flow);
-        nodeE.setTaskJPA(taskJPA);
+        nodeE.setTask(taskJPA);
 
         NodeJPA nodeF = new NodeJPA();
         nodeF.setName("F");
         nodeF.setFlow(flow);
-        nodeF.setTaskJPA(taskJPA);
+        nodeF.setTask(taskJPA);
 
         NodeJPA nodeG = new NodeJPA();
         nodeG.setName("G");
         nodeG.setFlow(flow);
-        nodeG.setTaskJPA(taskJPA);
+        nodeG.setTask(taskJPA);
 
         NodeJPA nodeI = new NodeJPA();
         nodeI.setName("I");
         nodeI.setFlow(flow);
-        nodeI.setTaskJPA(taskJPA);
+        nodeI.setTask(taskJPA);
 
         nodeRepository.saveAll(Arrays.asList(
             nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG, nodeI

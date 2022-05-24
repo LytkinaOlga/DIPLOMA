@@ -1,5 +1,5 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution;
 
-public enum NodeExecutionStatus {
+public enum ExecutionStatus {
     NOT_STARTED, RUNNING, FAILED, SUCCEEDED
 }

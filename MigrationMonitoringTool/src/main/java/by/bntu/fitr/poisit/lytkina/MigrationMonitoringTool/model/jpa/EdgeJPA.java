@@ -1,14 +1,17 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.EdgeDTO;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "edges")
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 public class EdgeJPA {
     @Id
@@ -26,5 +29,18 @@ public class EdgeJPA {
         this.id = Long.valueOf(edgeDTO.getId());
         this.nodeFrom = Long.valueOf(edgeDTO.getSource());
         this.nodeTo = Long.valueOf(edgeDTO.getTarget());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        EdgeJPA edgeJPA = (EdgeJPA) o;
+        return id != null && Objects.equals(id, edgeJPA.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nodeFrom, nodeTo);
     }
 }

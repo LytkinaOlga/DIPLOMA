@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +18,7 @@ import java.util.Map;
 
 @NoArgsConstructor
 public class NodeExecutionWrapper implements Runnable {
+    private Long flowId;
     private Long executionId;
     private Long nodeId;
     private Task task;
@@ -34,7 +33,7 @@ public class NodeExecutionWrapper implements Runnable {
             task.run();
         } catch (Exception e) {
             logger.debug("Node execution failed, node: " + nodeId);
-            updateNodeStatus(NodeExecutionStatus.FAILED);
+            updateNodeStatus(ExecutionStatus.FAILED);
             throw new RuntimeException("Node execution failed, node: " + nodeId, e);
         }
         postExecute();
@@ -45,9 +44,10 @@ public class NodeExecutionWrapper implements Runnable {
     @Autowired
     NodeJPARepository nodeRepository;
 
-    public NodeExecutionWrapper(ExecutionGraph executionGraph, GraphNode graphNode) {
-        this.executionId = executionGraph.getExecutionId();
+    public NodeExecutionWrapper(ExecutionGraph executionGraph, GraphNode graphNode, Long executionId) {
+        this.flowId = executionGraph.getFlowId();
         this.nodeId = graphNode.getNodeId();
+        this.executionId = executionId;
     }
 
     public void forceCompleteTask() {
@@ -61,7 +61,7 @@ public class NodeExecutionWrapper implements Runnable {
         );
 
         try {
-            String taskClassName = nodeJPA.getTaskJPA().getClassName();
+            String taskClassName = nodeJPA.getTask().getClassName();
             Class<?> clazz = Class.forName(taskClassName);
             Constructor<?> constructor = clazz.getConstructor();
             task = (Task)constructor.newInstance();
@@ -72,6 +72,7 @@ public class NodeExecutionWrapper implements Runnable {
         }
 
         taskParameters = new HashMap<>();
+        taskParameters.put(Constants.ParamNames.CURRENT_FLOW_ID, flowId.toString());
         taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionId.toString());
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
         taskParameters.put(Constants.ParamNames.ADAPTER_URL, "http://localhost:8081");
@@ -86,18 +87,19 @@ public class NodeExecutionWrapper implements Runnable {
 
 
     private void preExecute() {
-        updateNodeStatus(NodeExecutionStatus.RUNNING);
+        updateNodeStatus(ExecutionStatus.RUNNING);
         logger.debug("Started to execute task " + task.getName() + " of node " + nodeId);
     }
 
     private void postExecute() {
-        updateNodeStatus(NodeExecutionStatus.SUCCEEDED);
+        updateNodeStatus(ExecutionStatus.SUCCEEDED);
         logger.debug("Finished execution of task " + task.getName() + " of node " + nodeId);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void updateNodeStatus(NodeExecutionStatus status) {
+    protected void updateNodeStatus(ExecutionStatus status) {
         NodeJPA nodeJPA = nodeRepository.findById(nodeId).get();
         nodeJPA.setStatus(status);
+        nodeRepository.save(nodeJPA);
     }
 }

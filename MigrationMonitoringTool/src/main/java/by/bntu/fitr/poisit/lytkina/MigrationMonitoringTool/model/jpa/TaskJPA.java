@@ -1,5 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.TaskDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
@@ -27,4 +28,8 @@ public class TaskJPA {
         cascade = CascadeType.ALL
     )
     private Collection<TaskParameterJPA> taskParameters;
+
+    public TaskJPA(Long id) {
+        this.id = id;
+    }
 }

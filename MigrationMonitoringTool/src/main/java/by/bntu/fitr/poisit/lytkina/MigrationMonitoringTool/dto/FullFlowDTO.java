@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Collection;
 import java.util.Date;
@@ -17,10 +18,11 @@ public class FullFlowDTO {
     private String name;
 
     @JsonIgnore
-    @JsonFormat(
-        shape = JsonFormat.Shape.STRING,
-        pattern = "dd-MM-yyyy mich hh:mm:ss"
-    )
+//    @JsonFormat(
+//        shape = JsonFormat.Shape.STRING,
+//        pattern = "dd-MM-yyyy hh:mm:ss"
+//    )
+    @DateTimeFormat(pattern="dd/MM/yyyy")
     private Date creationDate;
 
     private Collection<NodeDTO> nodes;

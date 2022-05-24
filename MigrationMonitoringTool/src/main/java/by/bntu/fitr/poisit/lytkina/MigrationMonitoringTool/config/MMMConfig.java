@@ -14,8 +14,10 @@ import java.util.Collection;
 public class MMMConfig {
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public NodeExecutionWrapper getNodeExecutionWrapper(ExecutionGraph executionGraph, GraphNode graphNode) {
-        return new NodeExecutionWrapper(executionGraph, graphNode);
+    public NodeExecutionWrapper getNodeExecutionWrapper(
+        ExecutionGraph executionGraph, GraphNode graphNode, Long executionId
+    ) {
+        return new NodeExecutionWrapper(executionGraph, graphNode, executionId);
     }
 
     @Bean

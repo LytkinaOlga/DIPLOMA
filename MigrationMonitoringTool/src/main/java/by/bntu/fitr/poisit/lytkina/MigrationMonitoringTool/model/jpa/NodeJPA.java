@@ -1,7 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeDTO;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.NodeExecutionStatus;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +26,7 @@ public class NodeJPA {
 
     @ManyToOne
     @JoinColumn(name = "task_id")
-    private TaskJPA taskJPA;
+    private TaskJPA task;
 
     @ManyToOne
     @JoinColumn(name = "executionId")
@@ -44,7 +44,7 @@ public class NodeJPA {
     private double y = 200.2;
 
     @Column(name = "status")
-    private NodeExecutionStatus status = NodeExecutionStatus.NOT_STARTED;
+    private ExecutionStatus status;
 
     public NodeJPA(Long id) {
         this.id = id;
@@ -53,26 +53,24 @@ public class NodeJPA {
     public NodeJPA(NodeDTO nodeDTO) {
         this.id = Long.valueOf(nodeDTO.getId());
         this.name = nodeDTO.getName();
+        this.task = new TaskJPA(Long.valueOf(nodeDTO.getTaskId()));
         if (nodeDTO.getPosition() != null) {
             this.setX(nodeDTO.getPosition().getX());
             this.setY(nodeDTO.getPosition().getY());
         }
     }
 
-    public NodeJPA(NodeJPA orig) {
-        this.setId(orig.getId());
-        this.setName(orig.getName());
-        this.setFlow(orig.getFlow());
-        this.setX(orig.getX());
-        this.setY(orig.getY());
+    public static NodeJPA copyWithoutFlowAndEdgesAndId(NodeJPA orig) {
+        NodeJPA newNode =new NodeJPA();
+        newNode.setName(orig.getName());
+        newNode.setX(orig.getX());
+        newNode.setY(orig.getY());
+        newNode.setTask(orig.getTask());
+
+        return newNode;
     }
 
     public void setFlow(FlowJPA flow) {
         this.flow = flow;
     }
-
-    public void setFlow(Long id) {
-        this.flow = new FlowJPA(id);
-    }
-
 }
