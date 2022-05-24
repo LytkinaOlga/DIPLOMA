@@ -14,12 +14,10 @@ class FlowService {
         return axios.get(UPL_GET_FLOW_BY_ID + id)
     }
 
-    addFlow(nodes, edges) {
-        console.log(nodes);
-        console.log(edges);
+    addFlow(nodes, edges, name) {
 
         return axios.post(URL_POST_ADD_FLOW, {
-            name: "test ola555",
+            name: name,
             nodes: nodes,
             edges: edges
         })

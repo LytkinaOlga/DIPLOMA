@@ -11,16 +11,16 @@ import FlowService from '../services/FlowService';
 
 class AddFlow extends React.Component {
 
-
     render(){
         return (
             <>            
                 <FlowRenderer />
-                <RightPanel />
-                
+                <RightPanel />                
             </>
         );
     }    
 }
 
 export default AddFlow;
+
+

@@ -4,9 +4,9 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPAEdgeRepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPAFlowRepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.JPANodeRepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.EdgeJPARepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,31 +17,52 @@ import java.util.stream.Collectors;
 @Component
 public class FlowRepository {
     @Autowired
-    JPAFlowRepository flowRepository;
+    NodeJPARepository nodeRepository;
+
+    public void removeFlowElements(Flow flow) {
+        if (flow.getId() == null) {
+            return;
+        }
+        Collection<NodeJPA> removedNodes = nodeRepository.findAllByFlowId(flow.getId());
+        removedNodes.forEach(
+            node -> edgeRepository.deleteAllByNodeFrom(node.getId())
+        );
+        nodeRepository.deleteAll(removedNodes);
+    }
+
+
     @Autowired
-    JPANodeRepository nodeRepository;
+    FlowJPARepository flowRepository;
+
     @Autowired
-    JPAEdgeRepository edgeRepository;
+    EdgeJPARepository edgeRepository;
 
 
     public Collection<Flow> findAll() {
         Collection<FlowJPA> flowJPAs = flowRepository.findAll();
+//        return null;
         return flowJPAs.stream()
-            .map(this::loadFlowNodesAndEdges)
+            .map(Flow::new)
             .collect(Collectors.toList());
     }
 
     public Optional<Flow> findById(Long flowId) {
         Optional<FlowJPA> flowJPA = flowRepository.findById(flowId);
-        return flowJPA.map(this::loadFlowNodesAndEdges);
+        return flowJPA.map(this::loadFlowNodesAndEdges2);
+//        edgeRepository.findDeepEdgeById(flowId);
+//        return null;
+//        Optional<FlowJPA> flowJPA = flowRepository.findDeepEdgeById(flowId);
+//        return flowJPA.map(Flow::new);
     }
 
+    /**
+     * Recreates nodes and edges.
+     */
     @Transactional
-    public Flow recreate(Flow flow) {
+    public Flow updateFlow(Flow flow) {
         removeFlowElements(flow);
 
-        FlowJPA flowJPA = new FlowJPA(flow);
-        flowJPA = flowRepository.save(flowJPA);
+        FlowJPA flowJPA = shallowSave(flow);
         final Long flowId = flowJPA.getId();
 
         Collection<NodeJPA> oldNodes = flow.getNodes();
@@ -58,12 +79,12 @@ public class FlowRepository {
 
         List<EdgeJPA> edges = flow.getEdges().stream()
             .map(oldEdge -> {
-                NodeJPA newFrom = newNodes.get(oldEdge.getNodeFrom().getId());
-                NodeJPA newTo = newNodes.get(oldEdge.getNodeTo().getId());
+                NodeJPA newFrom = newNodes.get(oldEdge.getNodeFrom());
+                NodeJPA newTo = newNodes.get(oldEdge.getNodeTo());
 
                 EdgeJPA newEdge = new EdgeJPA();
-                newEdge.setNodeFrom(newFrom);
-                newEdge.setNodeTo(newTo);
+                newEdge.setNodeFrom(newFrom.getId());
+                newEdge.setNodeTo(newTo.getId());
 
                 return edgeRepository.save(newEdge);
             })
@@ -77,24 +98,39 @@ public class FlowRepository {
     }
 
     private Flow loadFlowNodesAndEdges(FlowJPA flowJPA) {
+
+        Collection<NodeJPA> nodes = nodeRepository.findAllByFlowId(flowJPA.getId());
+        Collection<EdgeJPA> edges = new ArrayList<>();
+        nodes.forEach(node -> edges.addAll(edgeRepository.findAllByNodeFrom(node.getId())));
+
+        Flow flow = new Flow(flowJPA);
+        flow.setNodes(nodes);
+        flow.setEdges(edges);
+        return flow;
+    }
+
+    private Flow loadFlowNodesAndEdges2(FlowJPA flowJPA) {
         Flow flow = new Flow(flowJPA);
         Collection<NodeJPA> nodes = nodeRepository.findAllByFlowId(flow.getId());
         Collection<EdgeJPA> edges = new ArrayList<>();
-        nodes.forEach(node -> edges.addAll(edgeRepository.findAllByNodeFromId(node.getId())));
+        nodes.forEach(node -> edges.addAll(edgeRepository.findAllByNodeFrom(node.getId())));
 
         flow.setNodes(nodes);
         flow.setEdges(edges);
         return flow;
     }
 
-    public void removeFlowElements(Flow flow) {
-        if (flow.getId() == null) {
-            return;
+
+
+    private FlowJPA shallowSave(Flow flow) {
+        Optional<FlowJPA> flowJPAOptional = flowRepository.findById(flow.getId());
+        if (flowJPAOptional.isPresent()) {
+            FlowJPA flowJPA = flowJPAOptional.get();
+            flowJPA.shallowMerge(flow);
+            return flowJPA;
+        } else {
+            FlowJPA newFlow = FlowJPA.shallowCopy(flow);
+            return flowRepository.save(newFlow);
         }
-        Collection<NodeJPA> removedNodes = nodeRepository.findAllByFlowId(flow.getId());
-        removedNodes.forEach(
-            node -> edgeRepository.deleteAllByNodeFromId(node.getId())
-        );
-        nodeRepository.deleteAll(removedNodes);
     }
 }

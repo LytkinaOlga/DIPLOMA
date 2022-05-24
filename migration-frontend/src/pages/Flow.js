@@ -9,50 +9,44 @@ class Flow extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            flow: [
-                {
+            flow:
+            {
+                id: "",
+                name: "",
+                createdDate: "",
+                nodes: [{
                     id: "",
-                    name: "",
-                    createdDate: "",
-                    nodes: [{
-                        id: "",
-                        data: {
-                            label: "node"
-                        },
-                        position: {
-                            x: 500,
-                            y: 100
-                        }
-                    }],
-                    edges: [{
-                        id: "",
-                        source: "",
-                        target: ""
-                    }]
-                }
-            ]
+                    data: {
+                        label: ""
+                    },
+                    position: {
+                        x: 500,
+                        y: 100
+                    }
+                }],
+                edges: [{
+                    id: "",
+                    source: "",
+                    target: ""
+                }]
+            }
+
         }
-    }    
+    }
 
     componentDidMount() {
-        console.log("ola id: " + this.props.params.id)
+        console.log("ola id: " + this.props.params.id);
         FlowService.getFlowById(this.props.params.id).then((res) => {
-            res.data.nodes[0].position = {
-                x: 500,
-                y: 100
-            };
-            res.data.nodes[0].data = {
-                label: "voly"
-            };
-            res.data.nodes[1].position = {
-                x: 500,
-                y: 150
-            }
-            res.data.nodes[1].data= {
-                label: "voly"
-            };
+
+            res.data.nodes.forEach((node, id) => {
+                node.data = {
+                    label: node.name
+                }
+                delete node.name;
+            })
+
             this.setState({ flow: res.data });
-            console.log(res.data)
+            console.log(this.state.flow);
         })
     }
 
@@ -78,9 +72,9 @@ class Flow extends React.Component {
         ];
         return (
             <div>
-                <FlowRenderer nodes = {this.state.flow.nodes}
-                              edges = {this.state.flow.edges}/>
-            </div>
+                <FlowRenderer myNodess={this.state.flow.nodes}
+                    myEdgess={this.state.flow.edges} />
+            </div >
         )
     }
 }

@@ -17,10 +17,10 @@ public class FullFlowDTO {
     private String name;
 
     @JsonIgnore
-//    @JsonFormat(
-//        shape = JsonFormat.Shape.STRING,
-//        pattern = "dd-MM-yyyy mich hh:mm:ss"
-//    )
+    @JsonFormat(
+        shape = JsonFormat.Shape.STRING,
+        pattern = "dd-MM-yyyy mich hh:mm:ss"
+    )
     private Date creationDate;
 
     private Collection<NodeDTO> nodes;

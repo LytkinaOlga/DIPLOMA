@@ -16,17 +16,15 @@ public class EdgeJPA {
     @Column(name = "edge_id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "node_from")
-    private NodeJPA nodeFrom;
+    @Column(name = "node_from")
+    private Long nodeFrom;
 
-    @OneToOne
-    @JoinColumn(name = "node_to")
-    private NodeJPA nodeTo;
+    @Column(name = "node_to")
+    private Long nodeTo;
 
     public EdgeJPA(EdgeDTO edgeDTO) {
         this.id = Long.valueOf(edgeDTO.getId());
-        this.nodeFrom = new NodeJPA(Long.valueOf(edgeDTO.getSource()));
-        this.nodeTo = new NodeJPA(Long.valueOf(edgeDTO.getTarget()));
+        this.nodeFrom = Long.valueOf(edgeDTO.getSource());
+        this.nodeTo = Long.valueOf(edgeDTO.getTarget());
     }
 }

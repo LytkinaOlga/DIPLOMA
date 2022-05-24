@@ -1,5 +1,6 @@
 import { Button, Typography } from '@mui/material';
-import React, { useState, useRef, useCallback } from 'react';
+import { getThemeProps } from '@mui/system';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import ReactFlow, {
     ReactFlowProvider,
     addEdge,
@@ -15,7 +16,7 @@ import LeftPanel from './LeftPanel';
 let id = 0;
 const getId = () => `${id++}`;
 
-export default function FlowRenderer(params) {
+export default function FlowRenderer({myNodess, myEdgess}) {
 
     const myNodes = [
         {
@@ -38,31 +39,16 @@ export default function FlowRenderer(params) {
     const myEdges = [
         { id: 'e1-2', source: '1', target: '2' }
     ];
-
-    var renderedNodes = null;
-    if (params.nodes == null)
-    {
-        renderedNodes = [];
-    }
-    else
-    {
-        renderedNodes = params.nodes
-    }
-
-    var renderedEdges = null;
-    if (params.edges == null)
-    {
-        renderedEdges = [];
-    }
-    else
-    {
-        renderedEdges = params.edges
-    }
-
+    
     const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState(myNodess);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(myEdgess);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
+
+    useEffect(()=> {
+        setNodes(myNodess);
+        setEdges(myEdgess)
+    }, [myNodess, myEdgess])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
@@ -98,7 +84,6 @@ export default function FlowRenderer(params) {
         [reactFlowInstance]
     );
     
-    
 
     function handleClick(){
         FlowService.addFlow(nodes, edges).then((res) => {
@@ -124,7 +109,6 @@ export default function FlowRenderer(params) {
                     >
                         <Controls />
                         <Background />
-                        <MiniMap/>
                     </ReactFlow>
                 </div>
                 <LeftPanel />
