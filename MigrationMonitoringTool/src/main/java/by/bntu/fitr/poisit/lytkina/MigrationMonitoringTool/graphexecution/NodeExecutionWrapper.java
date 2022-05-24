@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Constructor;
@@ -17,12 +16,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.MASTER_LIST_TABLE_PREFIX;
-
 @NoArgsConstructor
 public class NodeExecutionWrapper implements Runnable {
-    private ExecutionGraph executionGraph;
-    private GraphNode graphNode;
+    private Long flowId;
+    private Long executionId;
+    private Long nodeId;
     private Task task;
     private Map<String, String> taskParameters;
 
@@ -31,7 +29,13 @@ public class NodeExecutionWrapper implements Runnable {
         loadTask();
 
         preExecute();
-        task.run(taskParameters);
+        try {
+            task.run();
+        } catch (Exception e) {
+            logger.debug("Node execution failed, node: " + nodeId);
+            updateNodeStatus(ExecutionStatus.FAILED);
+            throw new RuntimeException("Node execution failed, node: " + nodeId, e);
+        }
         postExecute();
     }
 
@@ -40,21 +44,24 @@ public class NodeExecutionWrapper implements Runnable {
     @Autowired
     NodeJPARepository nodeRepository;
 
-    public NodeExecutionWrapper(ExecutionGraph executionGraph, GraphNode graphNode) {
-        this.executionGraph = executionGraph;
-        this.graphNode = graphNode;
+    public NodeExecutionWrapper(ExecutionGraph executionGraph, GraphNode graphNode, Long executionId) {
+        this.flowId = executionGraph.getFlowId();
+        this.nodeId = graphNode.getNodeId();
+        this.executionId = executionId;
+    }
+
+    public void forceCompleteTask() {
+        task.forceComplete();
     }
 
     @Transactional
     protected void loadTask() {
-        Long nodeId = graphNode.getNodeId();
-
         NodeJPA nodeJPA = nodeRepository.findById(nodeId).orElseThrow(
             () -> new IllegalArgumentException("No node with id " + nodeId + "present")
         );
 
         try {
-            String taskClassName = nodeJPA.getTaskJPA().getClassName();
+            String taskClassName = nodeJPA.getTask().getClassName();
             Class<?> clazz = Class.forName(taskClassName);
             Constructor<?> constructor = clazz.getConstructor();
             task = (Task)constructor.newInstance();
@@ -65,19 +72,11 @@ public class NodeExecutionWrapper implements Runnable {
         }
 
         taskParameters = new HashMap<>();
-        taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionGraph.getExecutionId().toString());
+        taskParameters.put(Constants.ParamNames.CURRENT_FLOW_ID, flowId.toString());
+        taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionId.toString());
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
         taskParameters.put(Constants.ParamNames.ADAPTER_URL, "http://localhost:8081");
-    }
-
-    private void executeTask() {
-        Long executionId = executionGraph.getExecutionId();
-        Long nodeId = graphNode.getNodeId();
-
-        NodeJPA nodeJPA = nodeRepository.findById(graphNode.getNodeId()).get();
-
-        task = null;
-        taskParameters = null;
+        task.setParameters(taskParameters);
     }
 
     public NodeExecutionWrapper(Task task, Map<String, String> taskParameters) {
@@ -88,10 +87,19 @@ public class NodeExecutionWrapper implements Runnable {
 
 
     private void preExecute() {
-        logger.debug("Started to execute task " + task.getName() + " of node " + graphNode.getNodeId());
+        updateNodeStatus(ExecutionStatus.RUNNING);
+        logger.debug("Started to execute task " + task.getName() + " of node " + nodeId);
     }
 
     private void postExecute() {
-        logger.debug("Finished execution of task " + task.getName() + " of node " + graphNode.getNodeId());
+        updateNodeStatus(ExecutionStatus.SUCCEEDED);
+        logger.debug("Finished execution of task " + task.getName() + " of node " + nodeId);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected void updateNodeStatus(ExecutionStatus status) {
+        NodeJPA nodeJPA = nodeRepository.findById(nodeId).get();
+        nodeJPA.setStatus(status);
+        nodeRepository.save(nodeJPA);
     }
 }

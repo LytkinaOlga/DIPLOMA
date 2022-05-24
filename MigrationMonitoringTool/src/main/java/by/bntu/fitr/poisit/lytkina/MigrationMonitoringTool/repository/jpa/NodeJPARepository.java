@@ -9,6 +9,6 @@ import java.util.Collection;
 public interface NodeJPARepository extends CrudRepository<NodeJPA, Long> {
     Collection<NodeJPA> findAllByFlowId(Long flowId);
 
-    @EntityGraph(attributePaths = {"outgoingEdges", "incomingEdges"})
+    @EntityGraph(attributePaths = {"outgoingEdges", "incomingEdges", "task"})
     Collection<NodeJPA> findAllDeepByFlowId(Long flowId);
 }

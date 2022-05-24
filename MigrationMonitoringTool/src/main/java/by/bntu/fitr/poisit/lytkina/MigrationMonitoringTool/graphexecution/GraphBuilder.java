@@ -20,8 +20,8 @@ public class GraphBuilder {
     @Autowired
     ObjectProvider<ExecutionGraph> executionGraphObjectProvider;
 
-    public ExecutionGraph buildGraph(Long executionId) {
-        Collection<NodeJPA> nodes = nodeRepository.findAllDeepByFlowId(executionId);
+    public ExecutionGraph buildGraph(Long flowId) {
+        Collection<NodeJPA> nodes = nodeRepository.findAllDeepByFlowId(flowId);
         Collection<GraphNode> startNodes = new ArrayList<>();
         Map<Long, GraphNode> graphNodeMap = new HashMap<>();
 
@@ -44,7 +44,7 @@ public class GraphBuilder {
             }
         }
 
-        return executionGraphObjectProvider.getObject(executionId, startNodes);
+        return executionGraphObjectProvider.getObject(flowId, startNodes);
     }
 
     public ExecutionGraph fakeBuildGraph() {

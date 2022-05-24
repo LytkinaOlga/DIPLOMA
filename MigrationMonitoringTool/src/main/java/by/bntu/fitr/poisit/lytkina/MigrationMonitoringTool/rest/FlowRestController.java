@@ -9,14 +9,13 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJP
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class FlowRestController {
     @Autowired
@@ -24,14 +23,6 @@ public class FlowRestController {
 
     @Autowired
     FlowRepository flowRepository;
-
-    @GetMapping("/flow/{id}")
-    public ResponseEntity<FullFlowDTO> getFullFlow(@PathVariable("id") long flowId) {
-        Optional<Flow> flow = flowRepository.findById(flowId);
-        return flow
-            .map(f -> new ResponseEntity<>(new FullFlowDTO(f), HttpStatus.OK))
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
 
     @GetMapping("/flows")
     public ResponseEntity<List<FlowPreviewDTO>> getFlows() {
@@ -42,12 +33,12 @@ public class FlowRestController {
         return new ResponseEntity<>(allFlowPreviewDTOS, HttpStatus.OK);
     }
 
-
-
-    @PostMapping("/flow/preview")
-    public ResponseEntity<Long> saveFlowPreview(@RequestBody FlowJPA flow) {
-        flow = flowJPARepository.save(flow);
-        return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
+    @GetMapping("/flow/{id}")
+    public ResponseEntity<FullFlowDTO> getFullFlow(@PathVariable("id") long flowId) {
+        Optional<Flow> flow = flowRepository.findById(flowId);
+        return flow
+            .map(f -> new ResponseEntity<>(new FullFlowDTO(f), HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/flow")
@@ -57,7 +48,13 @@ public class FlowRestController {
         return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
     }
 
-    @PostMapping("/flows/delete")
+    @PostMapping("/flow/delete/{id}")
+    public ResponseEntity<Long> deleteFlow(@PathVariable("id") long flowId) {
+        flowJPARepository.deleteById(flowId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/flow/deleteall")
     public ResponseEntity<Long> getFlow() {
         flowJPARepository.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,9 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.*;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.EdgeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
@@ -48,11 +46,12 @@ public class FlowRepository {
 
     public Optional<Flow> findById(Long flowId) {
         Optional<FlowJPA> flowJPA = flowRepository.findById(flowId);
-        return flowJPA.map(this::loadFlowNodesAndEdges2);
-//        edgeRepository.findDeepEdgeById(flowId);
-//        return null;
-//        Optional<FlowJPA> flowJPA = flowRepository.findDeepEdgeById(flowId);
-//        return flowJPA.map(Flow::new);
+        return flowJPA.map(this::loadFlowNodesAndEdges);
+    }
+
+    public void instantiateExecution(Flow flow, Long executionId) {
+        // copy nodes
+        // copy edegs
     }
 
     /**
@@ -70,9 +69,8 @@ public class FlowRepository {
             .collect(Collectors.toMap(
                 NodeJPA::getId,
                 oldNode -> {
-                    NodeJPA newNode = new NodeJPA(oldNode);
-                    newNode.setId(null);
-                    newNode.setFlow(flowId);
+                    NodeJPA newNode = NodeJPA.copyWithoutFlowAndEdgesAndId(oldNode);
+                    newNode.setFlow(flowJPA);
                     return nodeRepository.save(newNode);
                 }
             ));
@@ -98,10 +96,13 @@ public class FlowRepository {
     }
 
     private Flow loadFlowNodesAndEdges(FlowJPA flowJPA) {
+        Collection<NodeJPA> nodes = nodeRepository.findAllDeepByFlowId(flowJPA.getId());
 
-        Collection<NodeJPA> nodes = nodeRepository.findAllByFlowId(flowJPA.getId());
-        Collection<EdgeJPA> edges = new ArrayList<>();
-        nodes.forEach(node -> edges.addAll(edgeRepository.findAllByNodeFrom(node.getId())));
+        Collection<EdgeJPA> edges = new HashSet<>();
+        nodes.forEach(node -> {
+            edges.addAll(node.getOutgoingEdges());
+            edges.addAll(node.getIncomingEdges());
+        });
 
         Flow flow = new Flow(flowJPA);
         flow.setNodes(nodes);
@@ -109,7 +110,7 @@ public class FlowRepository {
         return flow;
     }
 
-    private Flow loadFlowNodesAndEdges2(FlowJPA flowJPA) {
+    private Flow loadFlowNodesAndEdgesOld(FlowJPA flowJPA) {
         Flow flow = new Flow(flowJPA);
         Collection<NodeJPA> nodes = nodeRepository.findAllByFlowId(flow.getId());
         Collection<EdgeJPA> edges = new ArrayList<>();
@@ -119,8 +120,6 @@ public class FlowRepository {
         flow.setEdges(edges);
         return flow;
     }
-
-
 
     private FlowJPA shallowSave(Flow flow) {
         Optional<FlowJPA> flowJPAOptional = flowRepository.findById(flow.getId());

@@ -1,5 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionJPA;
+
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
@@ -42,6 +44,6 @@ public class Main {
 
     public static void testExecutionGraph() {
         ExecutionGraph graph = new GraphBuilder().fakeBuildGraph();
-        CompletableFuture<Void> future = graph.run();
+        ExecutionJPA future = graph.run();
     }
 }

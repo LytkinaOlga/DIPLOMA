@@ -1,5 +1,8 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionJPARepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -7,22 +10,48 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class ExecutionGraph {
+    private static final Map<Long, ExecutionGraph> createdExecutions = new HashMap<>();
+
     @Autowired
     ObjectProvider<NodeExecutionWrapper> nodeExecutionWrapperObjectProvider;
 
-    private final Long executionId;
+    @Autowired
+    ExecutionJPARepository executionJPARepository;
+
+    private final Long flowId;
     private final Collection<GraphNode> startNodes;
+    private final Map<Long, NodeExecutionWrapper> nodeExecutions;
+    private CompletableFuture<Void> executionFuture;
 
-    public ExecutionGraph(Long executionId, Collection<GraphNode> startNodes) {
-        this.executionId = executionId;
+    public ExecutionGraph(Long flowId, Collection<GraphNode> startNodes) {
+        this.flowId = flowId;
         this.startNodes = startNodes;
+        nodeExecutions = new HashMap<>();
     }
 
-    public CompletableFuture<Void> run() {
-        return buildExecutionFuture();
+    public static ExecutionGraph getByExecutionId(Long executionId) {
+        return createdExecutions.get(executionId);
     }
 
-    private CompletableFuture<Void> buildExecutionFuture() {
+    public ExecutionJPA run() {
+        ExecutionJPA executionJPA = new ExecutionJPA();
+        executionJPA.setStatus(ExecutionStatus.RUNNING);
+        executionJPA.setStartDate(new Date());
+        executionJPA.setFlowJPA(new FlowJPA(flowId));
+        executionJPARepository.save(executionJPA);
+
+        executionFuture = buildExecutionFuture(executionJPA.getId());
+
+        createdExecutions.put(executionJPA.getId(), this);
+
+        return executionJPA;
+    }
+
+    public void forceCompleteNode(Long nodeId) {
+        nodeExecutions.get(nodeId).forceCompleteTask();
+    }
+
+    private CompletableFuture<Void> buildExecutionFuture(Long executionId) {
         Map<GraphNode, CompletableFuture<Void>> nodeFutures = new HashMap<>();
         Collection<CompletableFuture<Void>> leafFutures = new ArrayList<>();
 
@@ -46,16 +75,18 @@ public class ExecutionGraph {
                         break outer;
                     }
                 }
+                NodeExecutionWrapper executionWrapper = nodeExecutionWrapperObjectProvider.getObject(
+                    this, currentNode, executionId
+                );
                 CompletableFuture<Void> nodeFuture = nodeDependencies.isEmpty() ?
-                    CompletableFuture.runAsync(
-                        nodeExecutionWrapperObjectProvider.getObject(this, currentNode)
-                    )
+                    CompletableFuture.runAsync(executionWrapper)
                     :
                     CompletableFuture.allOf(
                         nodeDependencies.toArray(new CompletableFuture[] {})
-                    ).thenRun(nodeExecutionWrapperObjectProvider.getObject(this, currentNode));
+                    ).thenRun(executionWrapper);
 
                 nodeFutures.put(currentNode, nodeFuture);
+                nodeExecutions.put(currentNode.getNodeId(), executionWrapper);
                 if (currentNode.getOutgoingNodes() == null || currentNode.getOutgoingNodes().isEmpty()) {
                     leafFutures.add(nodeFuture);
                 } else {
@@ -64,10 +95,20 @@ public class ExecutionGraph {
             }
         }
 
-        return CompletableFuture.allOf(leafFutures.toArray(new CompletableFuture[] {}));
+        CompletableFuture<Void> graphFuture = CompletableFuture.allOf(
+            leafFutures.toArray(new CompletableFuture[] {})
+        );
+
+        graphFuture.thenRun(() -> {
+            ExecutionJPA executionJPA = executionJPARepository.findById(executionId).get();
+            executionJPA.setStatus(ExecutionStatus.SUCCEEDED);
+            executionJPARepository.save(executionJPA);
+        });
+
+        return graphFuture;
     }
 
-    public Long getExecutionId() {
-        return executionId;
+    public Long getFlowId() {
+        return flowId;
     }
 }

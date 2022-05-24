@@ -1,20 +1,17 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.TaskJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.*;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.EdgeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.TaskJPARepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Component
 public class DataGenerator {
@@ -60,13 +57,25 @@ public class DataGenerator {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateComplexData() {
         TaskJPA taskJPA = new TaskJPA();
-        taskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.LoggingTask");
-        taskJPARepository.save(taskJPA);
+        taskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask");
+        taskJPA.setName("Logging Task");
+        TaskParameterJPA loggingTaskParameterJPA1 = new TaskParameterJPA(taskJPA, "message", "log message");
+        TaskParameterJPA loggingTaskParameterJPA2 = new TaskParameterJPA(taskJPA, "delay", "3000");
+        taskJPA.setTaskParameters(Arrays.asList(loggingTaskParameterJPA1, loggingTaskParameterJPA2));
 
+        taskJPARepository.save(taskJPA);
 
         TaskJPA adapterTaskJPA = new TaskJPA();
         adapterTaskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask");
+        adapterTaskJPA.setName("Adapter Task");
+        TaskParameterJPA adapterParamURL = new TaskParameterJPA(adapterTaskJPA, "url", "http://localhost:8081");
+        adapterTaskJPA.setTaskParameters(Collections.singletonList(adapterParamURL));
         taskJPARepository.save(adapterTaskJPA);
+
+        TaskJPA manualTask = new TaskJPA();
+        manualTask.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.ManualTask");
+        manualTask.setName("Manual Task");
+        taskJPARepository.save(manualTask);
 
         FlowJPA flow = new FlowJPA();
         flow.setId(1l);
@@ -76,42 +85,42 @@ public class DataGenerator {
         NodeJPA nodeA = new NodeJPA();
         nodeA.setName("A");
         nodeA.setFlow(flow);
-        nodeA.setTaskJPA(adapterTaskJPA);
+        nodeA.setTask(manualTask);
 
         NodeJPA nodeB = new NodeJPA();
         nodeB.setName("B");
         nodeB.setFlow(flow);
-        nodeB.setTaskJPA(adapterTaskJPA);
+        nodeB.setTask(manualTask);
 
         NodeJPA nodeC = new NodeJPA();
         nodeC.setName("C");
         nodeC.setFlow(flow);
-        nodeC.setTaskJPA(taskJPA);
+        nodeC.setTask(taskJPA);
 
         NodeJPA nodeD = new NodeJPA();
         nodeD.setName("D");
         nodeD.setFlow(flow);
-        nodeD.setTaskJPA(taskJPA);
+        nodeD.setTask(taskJPA);
 
         NodeJPA nodeE = new NodeJPA();
         nodeE.setName("E");
         nodeE.setFlow(flow);
-        nodeE.setTaskJPA(taskJPA);
+        nodeE.setTask(taskJPA);
 
         NodeJPA nodeF = new NodeJPA();
         nodeF.setName("F");
         nodeF.setFlow(flow);
-        nodeF.setTaskJPA(taskJPA);
+        nodeF.setTask(taskJPA);
 
         NodeJPA nodeG = new NodeJPA();
         nodeG.setName("G");
         nodeG.setFlow(flow);
-        nodeG.setTaskJPA(taskJPA);
+        nodeG.setTask(taskJPA);
 
         NodeJPA nodeI = new NodeJPA();
         nodeI.setName("I");
         nodeI.setFlow(flow);
-        nodeI.setTaskJPA(taskJPA);
+        nodeI.setTask(taskJPA);
 
         nodeRepository.saveAll(Arrays.asList(
             nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG, nodeI
