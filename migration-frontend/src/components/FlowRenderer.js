@@ -39,15 +39,16 @@ export default function FlowRenderer({myNodess, myEdgess}) {
     const myEdges = [
         { id: 'e1-2', source: '1', target: '2' }
     ];
-    
+    console.log(myNodess);
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState(myNodess);
     const [edges, setEdges, onEdgesChange] = useEdgesState(myEdgess);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
     useEffect(()=> {
-        setNodes(myNodess);
-        setEdges(myEdgess)
+        myNodess != undefined ? setNodes(myNodess) : setNodes([]);
+        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]);
+        
     }, [myNodess, myEdgess])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);

@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, CardHeader, CardMedia, Drawer, Icon } from '@mui/material';
-import * as React from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -18,10 +18,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import AddchartRoundedIcon from '@mui/icons-material/AddchartRounded';
 import BackupTableRoundedIcon from '@mui/icons-material/BackupTableRounded';
+import TaskService from '../services/TaskService';
 
 const drawerWidth = 240;
 
 export default function LeftPanel() {
+    const [tasks, setTasks] = useState([]);
+
+    useEffect(() => {
+        TaskService.getTasks().then((res) => { setTasks(res.data) });
+        console.log(tasks);
+    }, [])
 
     const handleClick = () => {
         alert('hello world');
@@ -30,7 +37,7 @@ export default function LeftPanel() {
     const onDragStart = (event, nodeType) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
-      };
+    };
 
     return (
         <Drawer
@@ -44,7 +51,7 @@ export default function LeftPanel() {
             <Toolbar />
             <Box sx={{ overflow: 'auto' }}>
                 <Typography sx={{ mt: 3, ml: 3, mb: 3 }}>TASK CATALOG</Typography>
-                <Divider sx={{mb: 2}}/>
+                <Divider sx={{ mb: 2 }} />
                 {/* <List>
                     {['File Loader', 'MasterList Creator', 'Amazon Adapter'].map((text, index) => (
                         <ListItem key={text} disablePadding>
@@ -57,24 +64,34 @@ export default function LeftPanel() {
                         </ListItem>
                     ))}
                 </List> */}
-                <Button variant="outlined" sx={{ml:1, width: 100}} onDragStart={(event) => onDragStart(event, 'File Loader')} draggable>
+                {/* <Button variant="outlined" sx={{ ml: 1, width: 100 }} onDragStart={(event) => onDragStart(event, 'File Loader')} draggable>
                     <Box>
-                        <InboxIcon sx={{width: 50, height: 50}}/>
+                        <InboxIcon sx={{ width: 50, height: 50 }} />
                         <Typography variant='subtitle2'>File Loader</Typography>
                     </Box>
                 </Button>
-                <Button variant="outlined" sx={{ml:2, width: 100, className:"dndnode"}} onDragStart={(event) => onDragStart(event, 'MasterList Creator')} draggable>
+                <Button variant="outlined" sx={{ ml: 2, width: 100, className: "dndnode" }} onDragStart={(event) => onDragStart(event, 'MasterList Creator')} draggable>
                     <Box>
-                        <AddchartRoundedIcon sx={{width: 50, height: 50}}/>
+                        <AddchartRoundedIcon sx={{ width: 50, height: 50 }} />
                         <Typography variant='subtitle2'>MasterList Creator</Typography>
                     </Box>
                 </Button>
-                <Button variant="outlined" sx={{ml:1, width: 100, mt: 2}} onDragStart={(event) => onDragStart(event, 'Amazon Adapter')} draggable>
+                <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, 'Amazon Adapter')} draggable>
                     <Box>
-                        <BackupTableRoundedIcon sx={{width: 50, height: 50}}/>
+                        <BackupTableRoundedIcon sx={{ width: 50, height: 50 }} />
                         <Typography variant='subtitle2'>Amazon Adapter</Typography>
                     </Box>
-                </Button>
+                </Button> */}
+                {
+                    tasks.map((task) => (
+                        <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, task.name)} draggable>
+                            <Box>
+                                <BackupTableRoundedIcon sx={{ width: 50, height: 50 }} />
+                                <Typography variant='subtitle2'>{task.name}</Typography>
+                            </Box>
+                        </Button>
+                    ))
+                }
             </Box>
         </Drawer>
     );
