@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames.NODE_PARAM_PREFIX;
+
 @NoArgsConstructor
 public class NodeExecutionWrapper implements Runnable {
     private Long flowId;
@@ -76,6 +78,13 @@ public class NodeExecutionWrapper implements Runnable {
         taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionId.toString());
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
         taskParameters.put(Constants.ParamNames.ADAPTER_URL, "http://localhost:8081");
+
+        nodeJPA.getParameters().forEach(parameterJPA -> {
+            taskParameters.put(
+                NODE_PARAM_PREFIX + parameterJPA.getParameter().getId(),
+                parameterJPA.getValue()
+            );
+        });
         task.setParameters(taskParameters);
     }
 

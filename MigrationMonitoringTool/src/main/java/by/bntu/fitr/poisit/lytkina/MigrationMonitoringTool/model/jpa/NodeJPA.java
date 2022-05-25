@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -45,6 +46,9 @@ public class NodeJPA {
 
     @Column(name = "status")
     private ExecutionStatus status;
+
+    @OneToMany
+    private List<NodeParameterJPA> parameters;
 
     public NodeJPA(Long id) {
         this.id = id;
