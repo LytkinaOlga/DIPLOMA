@@ -15,7 +15,7 @@ import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Collecti
 public class NodeDTO {
     private String id;
     private String name;
-    private PositionDTO position;
+    private NodePositionDTO position;
     private String taskId;
     private ExecutionStatus status;
 
@@ -25,7 +25,7 @@ public class NodeDTO {
     public NodeDTO(NodeJPA nodeJPA) {
         this.id = nodeJPA.getId().toString();
         this.name = nodeJPA.getName();
-        this.position = new PositionDTO(
+        this.position = new NodePositionDTO(
             nodeJPA.getX(),
             nodeJPA.getY()
         );
