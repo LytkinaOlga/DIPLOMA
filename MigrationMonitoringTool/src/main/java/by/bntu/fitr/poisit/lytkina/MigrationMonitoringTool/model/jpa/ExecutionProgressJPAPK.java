@@ -1,13 +1,20 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
+import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@NoArgsConstructor
 public class ExecutionProgressJPAPK implements Serializable {
-    private Long node;
     private Long execution;
+    private Long node;
+
+    public ExecutionProgressJPAPK(Long execution, Long node) {
+        this.execution = execution;
+        this.node = node;
+    }
 
     @Override
     public boolean equals(Object o) {

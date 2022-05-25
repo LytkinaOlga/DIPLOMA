@@ -1,6 +1,10 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.ExecutionNode;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionNodeJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionProgressJPAPK;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionNodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.Task;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
@@ -13,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +38,7 @@ public class NodeExecutionWrapper implements Runnable {
             task.run();
         } catch (Exception e) {
             logger.debug("Node execution failed, node: " + nodeId);
-            updateNodeStatus(ExecutionStatus.FAILED);
+            updateNode(ExecutionStatus.FAILED, null, new Date());
             throw new RuntimeException("Node execution failed, node: " + nodeId, e);
         }
         postExecute();
@@ -43,6 +48,9 @@ public class NodeExecutionWrapper implements Runnable {
 
     @Autowired
     NodeJPARepository nodeRepository;
+
+    @Autowired
+    ExecutionNodeJPARepository executionNodeJPARepository;
 
     public NodeExecutionWrapper(ExecutionGraph executionGraph, GraphNode graphNode, Long executionId) {
         this.flowId = executionGraph.getFlowId();
@@ -84,22 +92,29 @@ public class NodeExecutionWrapper implements Runnable {
         this.taskParameters = taskParameters;
     }
 
-
-
     private void preExecute() {
-        updateNodeStatus(ExecutionStatus.RUNNING);
+        updateNode(ExecutionStatus.RUNNING, new Date(), null);
         logger.debug("Started to execute task " + task.getName() + " of node " + nodeId);
     }
 
     private void postExecute() {
-        updateNodeStatus(ExecutionStatus.SUCCEEDED);
+        updateNode(ExecutionStatus.SUCCEEDED, null, new Date());
         logger.debug("Finished execution of task " + task.getName() + " of node " + nodeId);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void updateNodeStatus(ExecutionStatus status) {
-        NodeJPA nodeJPA = nodeRepository.findById(nodeId).get();
-        nodeJPA.setStatus(status);
-        nodeRepository.save(nodeJPA);
+    protected void updateNode(ExecutionStatus status, Date startDate, Date endDate) {
+        ExecutionNodeJPA executionNode = executionNodeJPARepository.findById(new ExecutionProgressJPAPK(executionId, nodeId))
+            .orElseThrow(() -> new RuntimeException("Failed to get execution node: " + nodeId + " of execution " + executionId));
+        if (status != null) {
+            executionNode.setStatus(status);
+        }
+        if (startDate != null) {
+            executionNode.setStartDate(startDate);
+        }
+        if (endDate != null) {
+            executionNode.setEndDate(endDate);
+        }
+        executionNodeJPARepository.save(executionNode);
     }
 }

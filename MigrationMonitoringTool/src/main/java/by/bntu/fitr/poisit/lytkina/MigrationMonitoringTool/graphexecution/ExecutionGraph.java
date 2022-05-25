@@ -1,10 +1,16 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Execution;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionNodeJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionProgressJPAPK;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ExecutionRepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionJPARepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -17,6 +23,9 @@ public class ExecutionGraph {
 
     @Autowired
     ExecutionJPARepository executionJPARepository;
+
+    @Autowired
+    ExecutionRepository executionRepository;
 
     private final Long flowId;
     private final Collection<GraphNode> startNodes;
@@ -33,18 +42,13 @@ public class ExecutionGraph {
         return createdExecutions.get(executionId);
     }
 
-    public ExecutionJPA run() {
-        ExecutionJPA executionJPA = new ExecutionJPA();
-        executionJPA.setStatus(ExecutionStatus.RUNNING);
-        executionJPA.setStartDate(new Date());
-        executionJPA.setFlowJPA(new FlowJPA(flowId));
-        executionJPARepository.save(executionJPA);
+    public Execution run() {
+        Execution execution = executionRepository.instantiateByFlow(flowId);
+        createdExecutions.put(execution.getId(), this);
+        executionFuture = buildExecutionFuture(execution.getId());
+        updateExecution(execution.getId(), ExecutionStatus.RUNNING, new Date(), null);
 
-        executionFuture = buildExecutionFuture(executionJPA.getId());
-
-        createdExecutions.put(executionJPA.getId(), this);
-
-        return executionJPA;
+        return execution;
     }
 
     public void forceCompleteNode(Long nodeId) {
@@ -100,9 +104,7 @@ public class ExecutionGraph {
         );
 
         graphFuture.thenRun(() -> {
-            ExecutionJPA executionJPA = executionJPARepository.findById(executionId).get();
-            executionJPA.setStatus(ExecutionStatus.SUCCEEDED);
-            executionJPARepository.save(executionJPA);
+            updateExecution(executionId, ExecutionStatus.SUCCEEDED, null, new Date());
         });
 
         return graphFuture;
@@ -110,5 +112,21 @@ public class ExecutionGraph {
 
     public Long getFlowId() {
         return flowId;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected void updateExecution(Long executionId, ExecutionStatus status, Date startDate, Date endDate) {
+        ExecutionJPA executionJPA = executionJPARepository.findById(executionId)
+            .orElseThrow(() -> new RuntimeException("Failed to get execution " + executionId));
+        if (status != null) {
+            executionJPA.setStatus(status);
+        }
+        if (startDate != null) {
+            executionJPA.setStartDate(startDate);
+        }
+        if (endDate != null) {
+            executionJPA.setEndDate(endDate);
+        }
+        executionJPARepository.save(executionJPA);
     }
 }
