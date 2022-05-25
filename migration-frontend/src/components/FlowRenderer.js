@@ -1,4 +1,6 @@
-import React, { useState, useRef, useCallback } from 'react';
+import { Button, Typography } from '@mui/material';
+import { getThemeProps } from '@mui/system';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import ReactFlow, {
     ReactFlowProvider,
     addEdge,
@@ -6,13 +8,15 @@ import ReactFlow, {
     useEdgesState,
     Controls,
     Background,
+    MiniMap,
 } from 'react-flow-renderer';
+import FlowService from '../services/FlowService';
 import LeftPanel from './LeftPanel';
 
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+const getId = () => `${id++}`;
 
-export default function FlowRenderer() {
+export default function FlowRenderer({myNodess, myEdgess}) {
 
     const myNodes = [
         {
@@ -22,13 +26,11 @@ export default function FlowRenderer() {
         },
         {
             id: '2',
-            type: 'output',
             data: { label: 'Test node 2' },
             position: { x: 500, y: 150 }
         },
         {
             id: '3',
-            type: 'output',
             data: { label: 'Test node 3' },
             position: { x: 500, y: 200 }
         }
@@ -37,11 +39,17 @@ export default function FlowRenderer() {
     const myEdges = [
         { id: 'e1-2', source: '1', target: '2' }
     ];
-
+    console.log(myNodess);
     const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState(myNodess);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(myEdgess);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
+
+    useEffect(()=> {
+        myNodess != undefined ? setNodes(myNodess) : setNodes([]);
+        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]);
+        
+    }, [myNodess, myEdgess])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
@@ -76,8 +84,16 @@ export default function FlowRenderer() {
         },
         [reactFlowInstance]
     );
+    
 
-    return (
+    function handleClick(){
+        FlowService.addFlow(nodes, edges).then((res) => {
+            console.log(res.data);
+        })
+        alert("Hi");
+    }
+
+    return (        
         <div >
             <ReactFlowProvider>
                 <div ref={reactFlowWrapper} style={{ height: 950 }}>
@@ -97,6 +113,19 @@ export default function FlowRenderer() {
                     </ReactFlow>
                 </div>
                 <LeftPanel />
+                <Button
+                    sx={{ position: 'absolute', bottom: 50, right: 300 , zIndex: 4}}
+                    variant="contained"
+                >
+                    <Typography>EXECUTE</Typography>
+                </Button>
+                <Button
+                    sx={{ position: 'absolute', bottom: 50, right: 430 , zIndex: 4}}
+                    variant="contained"
+                    onClick = {handleClick}
+                >
+                    <Typography>SAVE</Typography>
+                </Button>
             </ReactFlowProvider>
         </div >
     );

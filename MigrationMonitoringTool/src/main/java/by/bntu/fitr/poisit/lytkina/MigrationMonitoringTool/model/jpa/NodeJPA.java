@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,6 +29,10 @@ public class NodeJPA {
     @JoinColumn(name = "task_id")
     private TaskJPA task;
 
+    @ManyToOne
+    @JoinColumn(name = "executionId")
+    private ExecutionJPA execution;
+
     @OneToMany(mappedBy = "nodeFrom")
     private Set<EdgeJPA> outgoingEdges;
 
@@ -38,6 +43,12 @@ public class NodeJPA {
     private double x = 100.1;
     @Column(name = "position_y")
     private double y = 200.2;
+
+    @Column(name = "status")
+    private ExecutionStatus status;
+
+    @OneToMany
+    private List<NodeParameterJPA> parameters;
 
     public NodeJPA(Long id) {
         this.id = id;

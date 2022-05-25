@@ -32,44 +32,44 @@ TabPanel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 function a11yProps(index) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
 
-export default function ExecutionsTabs() {    
-    const [value, setValue] = React.useState(0);
+export default function ExecutionsTabs() {
+  const [value, setValue] = React.useState(0);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-      };
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
-      return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered="true">
-                  <Tab label="RUNNING EXECUTIONS" {...a11yProps(0)} />
-                  <Tab label="COMPLETED EXECUTIONS" {...a11yProps(1)} />
-                  <Tab label="UPCOMING EXECUTIONS" {...a11yProps(2)} />
-                  <Tab label="ALL EXECUTIONS" {...a11yProps(3)} />
-                </Tabs>
-            </Box>
-            <TabPanel value={value} index={0}>
-              <ExecutionCard/>
-              <ExecutionCard/>
-              <ExecutionCard/>
-              <ExecutionCard/>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              Item Two
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-              Item Three
-            </TabPanel>
-            <TabPanel value={value} index={3}>
-              Item Four
-            </TabPanel>
-        </Box>
-      );
-    }
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered="true">
+          <Tab label="RUNNING EXECUTIONS" {...a11yProps(0)} />
+          <Tab label="COMPLETED EXECUTIONS" {...a11yProps(1)} />
+          <Tab label="UPCOMING EXECUTIONS" {...a11yProps(2)} />
+          <Tab label="ALL EXECUTIONS" {...a11yProps(3)} />
+        </Tabs>
+      </Box>
+      <TabPanel value={value} index={0}>
+        <ExecutionCard />
+        <ExecutionCard />
+        <ExecutionCard />
+        <ExecutionCard />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        Item Two
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        Item Three
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        Item Four
+      </TabPanel>
+    </Box>
+  );
+}
