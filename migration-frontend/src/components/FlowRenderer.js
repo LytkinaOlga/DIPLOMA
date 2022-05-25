@@ -93,7 +93,7 @@ export default function FlowRenderer({myNodess, myEdgess}) {
         console.log(nodes);
         console.log("edges");
         console.log(edges);
-        FlowService.addFlow( "", nodes, edges).then((res) => {
+        FlowService.addFlow( "new created flow", nodes, edges).then((res) => {
             console.log(res.data);
         })
         alert("Hi");

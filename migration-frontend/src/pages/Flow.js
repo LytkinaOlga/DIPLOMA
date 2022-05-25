@@ -44,7 +44,6 @@ class Flow extends React.Component {
                 }
                 delete node.name;
             })
-
             this.setState({ flow: res.data });
             console.log(this.state.flow);
         })

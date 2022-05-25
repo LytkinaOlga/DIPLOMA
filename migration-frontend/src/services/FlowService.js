@@ -14,13 +14,21 @@ class FlowService {
         return axios.get(UPL_GET_FLOW_BY_ID + id)
     }
 
-    addFlow(nodes, edges, name) {
-
-        return axios.post(URL_POST_ADD_FLOW, {
+    addFlow(name, nodes, edges) {
+        nodes.forEach((node, id) => {
+            node.name = node.data.label
+        });
+        console.log("changedNodes");
+        console.log(nodes);
+        const flow = {
+            id: 1,
             name: name,
             nodes: nodes,
             edges: edges
-        })
+        };
+        console.log("flow");
+        console.log(JSON.stringify(flow));
+        return axios.post(URL_POST_ADD_FLOW, flow)
     }
 
 
