@@ -33,8 +33,8 @@ public class MigrationMonitoringToolApplication implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) throws Exception {
 		dataGenerator.generateComplexData();
-		Collection<FlowJPA> flowJPAS = flowJPARepository.findAll();
-		ExecutionGraph executionGraph = graphBuilder.buildGraph(flowJPAS.iterator().next().getId());
-		executionGraph.run();
+//		Collection<FlowJPA> flowJPAS = flowJPARepository.findAll();
+//		ExecutionGraph executionGraph = graphBuilder.buildGraph(flowJPAS.iterator().next().getId());
+//		executionGraph.run();
 	}
 }

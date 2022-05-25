@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class PositionDTO {
+public class NodePositionDTO {
     private double x;
     private double y;
 
-    public PositionDTO(double x, double y) {
+    public NodePositionDTO(double x, double y) {
         this.x = x;
         this.y = y;
     }

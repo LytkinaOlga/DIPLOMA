@@ -15,7 +15,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @IdClass(ExecutionProgressJPAPK.class)
-public class ExecutionProgressJPA {
+public class ExecutionNodeJPA {
     @Id
     @ManyToOne
     private NodeJPA node;
@@ -37,7 +37,7 @@ public class ExecutionProgressJPA {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        ExecutionProgressJPA that = (ExecutionProgressJPA) o;
+        ExecutionNodeJPA that = (ExecutionNodeJPA) o;
         return node != null && Objects.equals(node, that.node)
             && execution != null && Objects.equals(execution, that.execution);
     }
