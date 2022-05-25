@@ -42,3 +42,5 @@ build/
 
 .gitignore
 db
+application.local.properties
+*.log
