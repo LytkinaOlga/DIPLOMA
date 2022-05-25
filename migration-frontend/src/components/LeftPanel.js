@@ -34,8 +34,9 @@ export default function LeftPanel() {
         alert('hello world');
     }
 
-    const onDragStart = (event, nodeType) => {
+    const onDragStart = (event, nodeType, taskId) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.setData('application/reactflow/taskId', taskId);
         event.dataTransfer.effectAllowed = 'move';
     };
 
@@ -84,7 +85,7 @@ export default function LeftPanel() {
                 </Button> */}
                 {
                     tasks.map((task) => (
-                        <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, task.name)} draggable>
+                        <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, task.name, task.id)} draggable>
                             <Box>
                                 <BackupTableRoundedIcon sx={{ width: 50, height: 50 }} />
                                 <Typography variant='subtitle2'>{task.name}</Typography>

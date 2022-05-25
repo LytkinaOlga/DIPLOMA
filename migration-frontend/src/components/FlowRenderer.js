@@ -47,8 +47,7 @@ export default function FlowRenderer({myNodess, myEdgess}) {
 
     useEffect(()=> {
         myNodess != undefined ? setNodes(myNodess) : setNodes([]);
-        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]);
-        
+        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]);        
     }, [myNodess, myEdgess])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
@@ -64,6 +63,7 @@ export default function FlowRenderer({myNodess, myEdgess}) {
 
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
             const type = event.dataTransfer.getData('application/reactflow');
+            const taskId = event.dataTransfer.getData('application/reactflow/taskId');
 
             // check if the dropped element is valid
             if (typeof type === 'undefined' || !type) {
@@ -74,10 +74,12 @@ export default function FlowRenderer({myNodess, myEdgess}) {
                 x: event.clientX - reactFlowBounds.left,
                 y: event.clientY - reactFlowBounds.top,
             });
+
             const newNode = {
                 id: getId(),
                 position,
                 data: { label: `${type}` },
+                taskId: taskId,
             };
 
             setNodes((nds) => nds.concat(newNode));
@@ -87,7 +89,11 @@ export default function FlowRenderer({myNodess, myEdgess}) {
     
 
     function handleClick(){
-        FlowService.addFlow(nodes, edges).then((res) => {
+        console.log("nodes");
+        console.log(nodes);
+        console.log("edges");
+        console.log(edges);
+        FlowService.addFlow( "", nodes, edges).then((res) => {
             console.log(res.data);
         })
         alert("Hi");
