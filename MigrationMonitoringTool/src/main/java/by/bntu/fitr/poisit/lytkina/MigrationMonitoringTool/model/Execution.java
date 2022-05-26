@@ -16,6 +16,7 @@ import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Collecti
 @Data
 public class Execution {
     private Long id;
+    private Long flowId;
     private Date startDate;
     private Date endDate;
     private Collection<ExecutionNode> nodes;
@@ -26,6 +27,7 @@ public class Execution {
 
     public Execution(ExecutionJPA executionJPA) {
         this.id = executionJPA.getId();
+        this.flowId = executionJPA.getFlowJPA().getId();
         this.startDate = executionJPA.getStartDate();
         this.endDate = executionJPA.getEndDate();
     }

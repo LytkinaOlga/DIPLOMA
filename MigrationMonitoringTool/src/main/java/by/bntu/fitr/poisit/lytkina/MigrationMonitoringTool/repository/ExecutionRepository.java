@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.CollectionHelper.mapCollect;
@@ -31,9 +32,12 @@ public class ExecutionRepository {
     @Autowired
     ExecutionNodeJPARepository executionNodeJPARepository;
 
-    public Execution findById(Long executionId) {
-        ExecutionJPA executionJPA = executionJPARepository.findById(executionId)
-            .orElseThrow(() -> new RuntimeException("Execution not found: " + executionId));
+    public Optional<Execution> findById(Long executionId) {
+        Optional<ExecutionJPA> executionJPAOptional = executionJPARepository.findById(executionId);
+        if (!executionJPAOptional.isPresent()) {
+            return Optional.empty();
+        }
+        ExecutionJPA executionJPA = executionJPAOptional.get();
 
         Long flowId = executionJPA.getFlowJPA().getId();
         Flow flow = flowRepository.findById(executionJPA.getFlowJPA().getId())
@@ -53,12 +57,13 @@ public class ExecutionRepository {
 
         Execution execution = new Execution();
         execution.setId(executionId);
+        execution.setFlowId(flowId);
         execution.setStartDate(executionJPA.getStartDate());
         execution.setEndDate(executionJPA.getEndDate());
         execution.setNodes(executionNodes);
         execution.setEdges(flow.getEdges());
 
-        return execution;
+        return Optional.of(execution);
     }
 
 

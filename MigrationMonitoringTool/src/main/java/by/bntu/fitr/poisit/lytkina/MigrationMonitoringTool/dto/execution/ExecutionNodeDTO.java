@@ -10,17 +10,17 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class ExecutionNodeDTO {
-    private Long nodeId;
+    private String nodeId;
     private String nodeName;
-    private Long executionId;
+    private String executionId;
     private ExecutionStatus status;
     private Date startDate;
     private Date endDate;
 
     public ExecutionNodeDTO(ExecutionNode executionNode) {
-        this.nodeId = executionNode.getNodeId();
+        this.nodeId = executionNode.getNodeId().toString();
         this.nodeName = executionNode.getNodeName();
-        this.executionId = executionNode.getExecutionId();
+        this.executionId = executionNode.getExecutionId().toString();
         this.status = executionNode.getStatus();
         this.startDate = executionNode.getStartDate();
         this.endDate = executionNode.getEndDate();

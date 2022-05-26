@@ -111,11 +111,6 @@ public class NodeExecutionWrapper implements Runnable {
     }
 
     private void preExecute() {
-
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-            TransactionStatus txStatus = TransactionAspectSupport.currentTransactionStatus();
-            System.out.println(TransactionSynchronizationManager.getCurrentTransactionName() + ", " + txStatus);
-        }
         paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.RUNNING, new Date(), null);
         logger.debug("Started to execute task " + task.getName() + " of node " + nodeId);
     }
