@@ -16,8 +16,7 @@ class FlowService {
     }
 
     addFlow(id, name, nodes, edges) {
-        if (id === null)
-        {
+        if (id === null) {
             id = 0;
         }
         nodes.forEach((node, id) => {
@@ -37,9 +36,8 @@ class FlowService {
     }
 
     executeFlow(flowId) {
-        return axios.post(URL_POST_EXECUTE_FLOW, {
-            flowId: flowId
-        })
+        console.log(flowId);
+        return axios.post(URL_POST_EXECUTE_FLOW + "?flowId=" + flowId)
     }
 }
 

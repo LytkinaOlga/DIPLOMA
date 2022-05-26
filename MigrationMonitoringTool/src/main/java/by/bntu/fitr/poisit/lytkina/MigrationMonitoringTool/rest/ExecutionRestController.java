@@ -22,6 +22,7 @@ import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Collecti
 
 @RestController
 @RequestMapping
+@CrossOrigin(origins = "http://localhost:3000")
 public class ExecutionRestController {
     @Autowired
     FlowRepository flowRepository;
