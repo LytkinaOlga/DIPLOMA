@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 public class FullFlowDTO {
     private Long id;
     private String name;
-
-    private Date creationDate = new Date();
+    private String author;
+    private String description;
+    private Date modificationDate;
+    private Date creationDate;
 
     private Collection<NodeDTO> nodes;
 
@@ -24,6 +26,7 @@ public class FullFlowDTO {
         this.id = flow.getId();
         this.name = flow.getName();
         this.creationDate = flow.getCreationDate();
+        this.modificationDate = flow.getModificationDate();
         this.nodes = flow.getNodes().stream()
             .map(NodeDTO::new)
             .collect(Collectors.toList());
@@ -32,5 +35,7 @@ public class FullFlowDTO {
             .map(EdgeDTO::new)
             .collect(Collectors.toList());
 
+        this.author = flow.getAuthor();
+        this.description = flow.getDescription();
     }
 }

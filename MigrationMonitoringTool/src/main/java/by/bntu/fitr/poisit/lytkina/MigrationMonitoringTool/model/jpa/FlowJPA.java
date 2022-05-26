@@ -27,6 +27,12 @@ public class FlowJPA {
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modificationDate;
+
+    private String author;
+    private String description;
+
     @OneToMany(mappedBy = "flow")
     private Set<NodeJPA> nodes;
 
@@ -35,6 +41,9 @@ public class FlowJPA {
         flowJPA.setId(flow.getId());
         flowJPA.setName(flow.getName());
         flowJPA.setCreationDate(flow.getCreationDate());
+        flowJPA.setModificationDate(flowJPA.getModificationDate());
+        flowJPA.setDescription(flowJPA.getDescription());
+        flowJPA.setAuthor(flowJPA.getAuthor());
 
         return flowJPA;
     }
@@ -50,6 +59,12 @@ public class FlowJPA {
         }
         if (flow.getCreationDate() != null) {
             this.creationDate = flow.getCreationDate();
+        }
+        if (flow.getAuthor() != null) {
+            this.author = flow.getAuthor();
+        }
+        if (flow.getDescription() != null) {
+            this.description = flow.getDescription();
         }
     }
 

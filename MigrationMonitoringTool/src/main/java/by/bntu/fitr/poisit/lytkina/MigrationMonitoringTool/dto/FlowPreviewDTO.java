@@ -10,7 +10,10 @@ import java.util.Date;
 public class FlowPreviewDTO {
     private Long id;
     private String name;
+    private String author;
+    private String description;
     private Date creationDate;
+    private Date modificationDate;
 
     public FlowPreviewDTO(FlowJPA flow) {
         this.id = flow.getId();

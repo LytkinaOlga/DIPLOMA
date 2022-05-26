@@ -15,7 +15,10 @@ import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Collecti
 public class Flow {
     private Long id;
     private String name;
+    private String author;
+    private String description;
     private Date creationDate;
+    private Date modificationDate;
     private Collection<NodeJPA> nodes;
     private Collection<EdgeJPA> edges;
 
@@ -24,19 +27,20 @@ public class Flow {
         this.name = flowJPA.getName();
         this.creationDate = flowJPA.getCreationDate();
         this.nodes = flowJPA.getNodes();
-//        if (flowJPA.getNodes() != null) {
-//            Collection<EdgeJPA> edges = new ArrayList<>();
-//            nodes.forEach(n -> edges.addAll(n.getOutgoingEdges()));
-//            this.edges = edges;
-//        }
+        this.author = flowJPA.getAuthor();
+        this.description = flowJPA.getDescription();
+        this.modificationDate = flowJPA.getModificationDate();
     }
 
     public Flow(FullFlowDTO flowDTO) {
         this.id = flowDTO.getId();
         this.name = flowDTO.getName();
         this.creationDate = flowDTO.getCreationDate();
+        this.modificationDate = flowDTO.getModificationDate();
         this.setNodes(mapCollect(flowDTO.getNodes(), NodeJPA::new));
         this.setEdges(mapCollect(flowDTO.getEdges(), EdgeJPA::new));
+        this.author = flowDTO.getAuthor();
+        this.description = flowDTO.getDescription();
     }
 
     public void shallowMerge(Flow other) {
