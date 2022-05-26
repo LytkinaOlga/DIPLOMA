@@ -1,7 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -9,7 +8,9 @@ import javax.persistence.*;
 @Table(name = "node_params")
 @Entity
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class NodeParameterJPA {
     @Id
     @ManyToOne
@@ -20,4 +21,10 @@ public class NodeParameterJPA {
     private TaskParameterJPA parameter;
 
     private String value;
+
+    public NodeParameterJPA(NodeJPA node, TaskParameterJPA parameter, String value) {
+        this.node = node;
+        this.parameter = parameter;
+        this.value = value;
+    }
 }

@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.MASTER_LIST_TABLE_PREFIX;
 
@@ -15,6 +13,7 @@ public class AdapterTask extends AbstractTask {
     private static final String START_PATH = "/start";
     private static final String STATUS_PATH = "/status";
     private static final String STOP_PATH = "/stop";
+    public static final String URL_PARAM_ID = "3";
 
     @Override
     public void run() {
@@ -23,7 +22,7 @@ public class AdapterTask extends AbstractTask {
         String executionId = taskParameters.get(ParamNames.CURRENT_EXECUTION_ID);
         String nodeName = taskParameters.get(ParamNames.NODE_NAME);
         String masterListTable = MASTER_LIST_TABLE_PREFIX + executionId;
-        String startAdapterURL = taskParameters.get(ParamNames.ADAPTER_URL) + START_PATH;
+        String startAdapterURL = taskParameters.get(ParamNames.NODE_PARAM_PREFIX + URL_PARAM_ID) + START_PATH;
 
         logger.debug("Node {} is sending start to {} masterListTable: {}",
             nodeName, startAdapterURL, masterListTable
@@ -58,7 +57,7 @@ public class AdapterTask extends AbstractTask {
     }
 
     private AdapterStatus getAdapterStatus() {
-        String statusAdapterURL = taskParameters.get(ParamNames.ADAPTER_URL) + STATUS_PATH;
+        String statusAdapterURL = taskParameters.get(ParamNames.NODE_PARAM_PREFIX + URL_PARAM_ID) + STATUS_PATH;
         ResponseEntity<AdapterStatus> response = restTemplate.getForEntity(
             statusAdapterURL,
             AdapterStatus.class
@@ -73,7 +72,7 @@ public class AdapterTask extends AbstractTask {
         String nodeName = taskParameters.get(ParamNames.NODE_NAME);
         String masterListTable = MASTER_LIST_TABLE_PREFIX + executionId + "_" + nodeName;
 
-        String adapterURL = taskParameters.get(ParamNames.ADAPTER_URL) + STOP_PATH;
+        String adapterURL = taskParameters.get(ParamNames.NODE_PARAM_PREFIX + URL_PARAM_ID) + STOP_PATH;
         logger.debug("Sending start to {} masterListTable: {}", adapterURL, masterListTable);
         ResponseEntity<AdapterResponse> response = restTemplate.postForEntity(
             adapterURL,

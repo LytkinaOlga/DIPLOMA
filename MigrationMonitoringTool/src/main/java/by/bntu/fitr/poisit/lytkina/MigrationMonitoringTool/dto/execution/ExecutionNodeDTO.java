@@ -11,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ExecutionNodeDTO {
     private Long nodeId;
+    private String nodeName;
     private Long executionId;
     private ExecutionStatus status;
     private Date startDate;
@@ -18,6 +19,7 @@ public class ExecutionNodeDTO {
 
     public ExecutionNodeDTO(ExecutionNode executionNode) {
         this.nodeId = executionNode.getNodeId();
+        this.nodeName = executionNode.getNodeName();
         this.executionId = executionNode.getExecutionId();
         this.status = executionNode.getStatus();
         this.startDate = executionNode.getStartDate();

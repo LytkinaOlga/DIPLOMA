@@ -6,7 +6,6 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 

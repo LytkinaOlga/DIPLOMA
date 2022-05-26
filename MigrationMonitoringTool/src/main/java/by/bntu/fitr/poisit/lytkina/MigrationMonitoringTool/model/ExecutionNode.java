@@ -13,6 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ExecutionNode {
     private Long nodeId;
+    private String nodeName;
     private Long executionId;
     private ExecutionStatus status;
     private Date startDate;
@@ -24,5 +25,6 @@ public class ExecutionNode {
         this.status = executionNodeJPA.getStatus();
         this.startDate = executionNodeJPA.getStartDate();
         this.endDate = executionNodeJPA.getEndDate();
+        this.nodeName = executionNodeJPA.getNode().getName();
     }
 }

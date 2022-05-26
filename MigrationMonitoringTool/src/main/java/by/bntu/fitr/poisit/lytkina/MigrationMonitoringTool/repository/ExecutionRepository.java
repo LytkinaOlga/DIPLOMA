@@ -43,6 +43,7 @@ public class ExecutionRepository {
         Collection<ExecutionNode> executionNodes = executionProgresses.stream().map(executionProgress -> {
             ExecutionNode executionNode = new ExecutionNode();
             executionNode.setNodeId(executionProgress.getNode().getId());
+            executionNode.setNodeName(executionProgress.getNode().getName());
             executionNode.setExecutionId(executionId);
             executionNode.setStatus(executionProgress.getStatus());
             executionNode.setStartDate(executionProgress.getStartDate());

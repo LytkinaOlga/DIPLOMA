@@ -7,6 +7,7 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionPr
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ExecutionRepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionJPARepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.TransactionalParamUpdater;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,6 +28,9 @@ public class ExecutionGraph {
     @Autowired
     ExecutionRepository executionRepository;
 
+    @Autowired
+    TransactionalParamUpdater paramUpdater;
+
     private final Long flowId;
     private final Collection<GraphNode> startNodes;
     private final Map<Long, NodeExecutionWrapper> nodeExecutions;
@@ -46,7 +50,7 @@ public class ExecutionGraph {
         Execution execution = executionRepository.instantiateByFlow(flowId);
         createdExecutions.put(execution.getId(), this);
         executionFuture = buildExecutionFuture(execution.getId());
-        updateExecution(execution.getId(), ExecutionStatus.RUNNING, new Date(), null);
+        paramUpdater.updateExecution(execution.getId(), ExecutionStatus.RUNNING, new Date(), null);
 
         return execution;
     }
@@ -104,7 +108,7 @@ public class ExecutionGraph {
         );
 
         graphFuture.thenRun(() -> {
-            updateExecution(executionId, ExecutionStatus.SUCCEEDED, null, new Date());
+            paramUpdater.updateExecution(executionId, ExecutionStatus.SUCCEEDED, null, new Date());
         });
 
         return graphFuture;
@@ -112,21 +116,5 @@ public class ExecutionGraph {
 
     public Long getFlowId() {
         return flowId;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void updateExecution(Long executionId, ExecutionStatus status, Date startDate, Date endDate) {
-        ExecutionJPA executionJPA = executionJPARepository.findById(executionId)
-            .orElseThrow(() -> new RuntimeException("Failed to get execution " + executionId));
-        if (status != null) {
-            executionJPA.setStatus(status);
-        }
-        if (startDate != null) {
-            executionJPA.setStartDate(startDate);
-        }
-        if (endDate != null) {
-            executionJPA.setEndDate(endDate);
-        }
-        executionJPARepository.save(executionJPA);
     }
 }

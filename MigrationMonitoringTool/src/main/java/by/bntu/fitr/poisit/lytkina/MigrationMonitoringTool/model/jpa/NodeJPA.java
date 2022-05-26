@@ -1,17 +1,18 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeDTO;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "nodes")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class NodeJPA {
     @Id
@@ -34,9 +35,11 @@ public class NodeJPA {
     private ExecutionJPA execution;
 
     @OneToMany(mappedBy = "nodeFrom")
+    @ToString.Exclude
     private Set<EdgeJPA> outgoingEdges;
 
     @OneToMany(mappedBy = "nodeTo")
+    @ToString.Exclude
     private Set<EdgeJPA> incomingEdges;
 
     @Column(name = "position_x")
@@ -44,10 +47,8 @@ public class NodeJPA {
     @Column(name = "position_y")
     private double y = 200.2;
 
-    @Column(name = "status")
-    private ExecutionStatus status;
-
-    @OneToMany
+    @OneToMany(mappedBy = "node", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<NodeParameterJPA> parameters;
 
     public NodeJPA(Long id) {

@@ -1,8 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

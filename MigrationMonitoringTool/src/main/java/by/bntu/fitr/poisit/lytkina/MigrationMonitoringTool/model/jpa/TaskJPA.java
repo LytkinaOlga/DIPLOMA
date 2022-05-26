@@ -1,20 +1,17 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.TaskDTO;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
 @Table(name = "tasks")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class TaskJPA {
     @Id
-    @GeneratedValue
     private Long id;
 
     @Column(name = "class_name")
@@ -27,6 +24,7 @@ public class TaskJPA {
         mappedBy = "task",
         cascade = CascadeType.ALL
     )
+    @ToString.Exclude
     private Collection<TaskParameterJPA> taskParameters;
 
     public TaskJPA(Long id) {
