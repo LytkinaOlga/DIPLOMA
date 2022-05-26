@@ -71,7 +71,9 @@ class Flow extends React.Component {
         ];
         return (
             <div>
-                <FlowRenderer myNodess={this.state.flow.nodes}
+                <FlowRenderer 
+                    flowNameValue = {this.state.flow.name}
+                    myNodess={this.state.flow.nodes}
                     myEdgess={this.state.flow.edges} />
             </div >
         )

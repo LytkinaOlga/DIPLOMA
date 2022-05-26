@@ -1,7 +1,6 @@
 import { Button, Typography } from '@mui/material';
 import * as React from 'react';
 import FlowRenderer from '../components/FlowRenderer';
-import RightPanel from '../components/RightPanel';
 
 import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
 import SaveIcon from '@mui/icons-material/Save';
@@ -14,8 +13,7 @@ class AddFlow extends React.Component {
     render(){
         return (
             <>            
-                <FlowRenderer />
-                <RightPanel />                
+                <FlowRenderer />          
             </>
         );
     }    

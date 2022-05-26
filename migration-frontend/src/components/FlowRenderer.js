@@ -11,12 +11,13 @@ import ReactFlow, {
     MiniMap,
 } from 'react-flow-renderer';
 import FlowService from '../services/FlowService';
+import FlowParametersPanel from './FlowParametersPanel';
 import LeftPanel from './LeftPanel';
 
 let id = 0;
 const getId = () => `${id++}`;
 
-export default function FlowRenderer({myNodess, myEdgess}) {
+export default function FlowRenderer({flowNameValue, myNodess, myEdgess}) {
 
     const myNodes = [
         {
@@ -44,10 +45,14 @@ export default function FlowRenderer({myNodess, myEdgess}) {
     const [nodes, setNodes, onNodesChange] = useNodesState(myNodess);
     const [edges, setEdges, onEdgesChange] = useEdgesState(myEdgess);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
+    const [flowName, setFlowName] = useState(flowNameValue);
 
     useEffect(()=> {
         myNodess != undefined ? setNodes(myNodess) : setNodes([]);
-        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]);        
+        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]); 
+        flowNameValue != undefined ? setFlowName(flowNameValue) : setFlowName('');    
+        console.log("1. floooow name");
+        console.log(flowName);      
     }, [myNodess, myEdgess])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
@@ -86,17 +91,17 @@ export default function FlowRenderer({myNodess, myEdgess}) {
         },
         [reactFlowInstance]
     );
+
+    const changeFlowName = (flowNameValue) => {
+        setFlowName(flowNameValue);
+    }
     
 
-    function handleClick(){
-        console.log("nodes");
-        console.log(nodes);
-        console.log("edges");
-        console.log(edges);
-        FlowService.addFlow( "new created flow", nodes, edges).then((res) => {
+    const handleClick = () => {
+        FlowService.addFlow( flowName, nodes, edges).then((res) => {
             console.log(res.data);
         })
-        alert("Hi");
+        alert("Flow saved");
     }
 
     return (        
@@ -119,6 +124,10 @@ export default function FlowRenderer({myNodess, myEdgess}) {
                     </ReactFlow>
                 </div>
                 <LeftPanel />
+                <FlowParametersPanel 
+                    defaultFlowName={flowName}
+                    changeFlowName={changeFlowName}
+                    />
                 <Button
                     sx={{ position: 'absolute', bottom: 50, right: 300 , zIndex: 4}}
                     variant="contained"
