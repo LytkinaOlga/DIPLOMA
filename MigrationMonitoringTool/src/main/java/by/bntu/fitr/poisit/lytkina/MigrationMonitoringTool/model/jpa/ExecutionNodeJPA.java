@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "execution_progress")
+@Table(name = "execution_nodes")
 @Getter
 @Setter
 @ToString

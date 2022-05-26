@@ -11,17 +11,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class TaskParameterJPA {
     @Id
-    @GeneratedValue
     private Long id;
     private String name;
-    private String value;
 
     @ManyToOne
     private TaskJPA task;
 
-    public TaskParameterJPA(TaskJPA task, String name, String value) {
+    public TaskParameterJPA(Long id, String name, TaskJPA task) {
+        this.id = id;
         this.name = name;
-        this.value = value;
         this.task = task;
     }
 }

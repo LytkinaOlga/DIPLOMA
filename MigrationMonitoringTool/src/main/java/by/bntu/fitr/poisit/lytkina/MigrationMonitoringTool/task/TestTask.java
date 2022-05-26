@@ -4,8 +4,8 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 import org.springframework.util.StringUtils;
 
 public class TestTask extends AbstractTask {
-    private static final String SLEEP_TIME_PARAM_ID = "1";
-    private static final String MESSAGE_PARAM_ID = "2";
+    public static final String DELAY_PARAM_ID = "1";
+    public static final String MESSAGE_PARAM_ID = "2";
 
     @Override
     public void run() {
@@ -43,7 +43,7 @@ public class TestTask extends AbstractTask {
     }
 
     private String getSleepTime() {
-        return taskParameters.get(Constants.ParamNames.NODE_PARAM_PREFIX + SLEEP_TIME_PARAM_ID);
+        return taskParameters.get(Constants.ParamNames.NODE_PARAM_PREFIX + DELAY_PARAM_ID);
     }
 
     private String getMessage() {

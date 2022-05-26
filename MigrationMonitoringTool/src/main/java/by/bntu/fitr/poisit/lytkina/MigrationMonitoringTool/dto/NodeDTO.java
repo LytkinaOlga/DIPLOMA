@@ -3,6 +3,7 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,9 +18,8 @@ public class NodeDTO {
     private String name;
     private NodePositionDTO position;
     private String taskId;
-    private ExecutionStatus status;
 
-    @JsonAlias("parameters")
+    @JsonProperty("parameters")
     private List<NodeParameterDTO> nodeParametersDTO;
 
     public NodeDTO(NodeJPA nodeJPA) {
@@ -30,7 +30,6 @@ public class NodeDTO {
             nodeJPA.getY()
         );
         this.taskId = nodeJPA.getTask().getId().toString();
-        this.status = nodeJPA.getStatus();
         this.nodeParametersDTO = mapCollect(nodeJPA.getParameters(), NodeParameterDTO::new);
     }
 }

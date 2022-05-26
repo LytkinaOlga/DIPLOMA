@@ -7,13 +7,18 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionNodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.Task;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.TransactionalParamUpdater;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +36,9 @@ public class NodeExecutionWrapper implements Runnable {
     private Task task;
     private Map<String, String> taskParameters;
 
+    @Autowired
+    TransactionalParamUpdater paramUpdater;
+
     @Transactional
     public void run() {
         loadTask();
@@ -40,7 +48,7 @@ public class NodeExecutionWrapper implements Runnable {
             task.run();
         } catch (Exception e) {
             logger.debug("Node execution failed, node: " + nodeId);
-            updateNode(ExecutionStatus.FAILED, null, new Date());
+            paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.FAILED, null, new Date());
             throw new RuntimeException("Node execution failed, node: " + nodeId, e);
         }
         postExecute();
@@ -85,7 +93,8 @@ public class NodeExecutionWrapper implements Runnable {
         taskParameters.put(Constants.ParamNames.CURRENT_FLOW_ID, flowId.toString());
         taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionId.toString());
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
-        taskParameters.put(Constants.ParamNames.ADAPTER_URL, "http://localhost:8081");
+        // todo: remove
+        taskParameters.put(Constants.ParamNames.NODE_PARAM_PREFIX + AdapterTask.URL_PARAM_ID, "http://localhost:8081");
 
         nodeJPA.getParameters().forEach(parameterJPA -> {
             taskParameters.put(
@@ -102,28 +111,18 @@ public class NodeExecutionWrapper implements Runnable {
     }
 
     private void preExecute() {
-        updateNode(ExecutionStatus.RUNNING, new Date(), null);
+
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionStatus txStatus = TransactionAspectSupport.currentTransactionStatus();
+            System.out.println(TransactionSynchronizationManager.getCurrentTransactionName() + ", " + txStatus);
+        }
+        paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.RUNNING, new Date(), null);
         logger.debug("Started to execute task " + task.getName() + " of node " + nodeId);
     }
 
     private void postExecute() {
-        updateNode(ExecutionStatus.SUCCEEDED, null, new Date());
+        paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.SUCCEEDED, null, new Date());
         logger.debug("Finished execution of task " + task.getName() + " of node " + nodeId);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void updateNode(ExecutionStatus status, Date startDate, Date endDate) {
-        ExecutionNodeJPA executionNode = executionNodeJPARepository.findById(new ExecutionProgressJPAPK(executionId, nodeId))
-            .orElseThrow(() -> new RuntimeException("Failed to get execution node: " + nodeId + " of execution " + executionId));
-        if (status != null) {
-            executionNode.setStatus(status);
-        }
-        if (startDate != null) {
-            executionNode.setStartDate(startDate);
-        }
-        if (endDate != null) {
-            executionNode.setEndDate(endDate);
-        }
-        executionNodeJPARepository.save(executionNode);
-    }
 }

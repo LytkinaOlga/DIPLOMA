@@ -1,10 +1,11 @@
-package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool;
+package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.*;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.EdgeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.TaskJPARepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -12,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
+
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask.DELAY_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask.MESSAGE_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask.URL_PARAM_ID;
 
 @Component
 public class DataGenerator {
@@ -28,22 +33,46 @@ public class DataGenerator {
     TaskJPARepository taskJPARepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void generateData() {
+    public void generateSimpleFlow() {
         FlowJPA flow = new FlowJPA();
-        flow.setName("flow1");
+        flow.setId(1L);
+        flow.setName("simpleFlow");
         flow = flowJPARepository.save(flow);
 
+        TaskJPA taskJPA = new TaskJPA();
+        taskJPA.setId(1L);
+        taskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask");
+        taskJPA.setName("Test Task");
+        TaskParameterJPA messageParam = new TaskParameterJPA(
+            Long.valueOf(MESSAGE_PARAM_ID), "message", taskJPA
+        );
+        TaskParameterJPA delayParam = new TaskParameterJPA(
+            Long.valueOf(DELAY_PARAM_ID), "delay", taskJPA
+        );
+        taskJPA.setTaskParameters(Arrays.asList(messageParam, delayParam));
+        taskJPA = taskJPARepository.save(taskJPA);
+
         NodeJPA node1 = new NodeJPA();
-        node1.setName("node1");
+        node1.setName("X");
         node1.setFlow(flow);
         node1.setX(100.1);
         node1.setY(100.1);
+        node1.setTask(taskJPA);
+        node1.setParameters(Arrays.asList(
+            new NodeParameterJPA(node1, messageParam, "message of node X"),
+            new NodeParameterJPA(node1, delayParam, "3000")
+        ));
 
         NodeJPA node2 = new NodeJPA();
-        node2.setName("node2");
+        node2.setName("Y");
         node2.setFlow(flow);
         node2.setX(200.2);
         node2.setY(200.2);
+        node2.setTask(taskJPA);
+        node2.setParameters(Arrays.asList(
+            new NodeParameterJPA(node2, messageParam, "message of node Y"),
+            new NodeParameterJPA(node2, delayParam, "1000")
+        ));
 
         node1 = nodeRepository.save(node1);
         node2 = nodeRepository.save(node2);
@@ -51,16 +80,20 @@ public class DataGenerator {
         EdgeJPA edge1 = new EdgeJPA();
         edge1.setNodeFrom(node1.getId());
         edge1.setNodeTo(node2.getId());
-        edge1 = edgeRepository.save(edge1);
+        edgeRepository.save(edge1);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void generateComplexData() {
+    public void generateComplexFlow() {
         TaskJPA taskJPA = new TaskJPA();
         taskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask");
         taskJPA.setName("Logging Task");
-        TaskParameterJPA loggingTaskParameterJPA1 = new TaskParameterJPA(taskJPA, "message", "log message");
-        TaskParameterJPA loggingTaskParameterJPA2 = new TaskParameterJPA(taskJPA, "delay", "3000");
+        TaskParameterJPA loggingTaskParameterJPA1 = new TaskParameterJPA(
+            Long.valueOf(MESSAGE_PARAM_ID), "message", taskJPA
+        );
+        TaskParameterJPA loggingTaskParameterJPA2 = new TaskParameterJPA(
+            Long.valueOf(DELAY_PARAM_ID), "delay", taskJPA
+        );
         taskJPA.setTaskParameters(Arrays.asList(loggingTaskParameterJPA1, loggingTaskParameterJPA2));
 
         taskJPARepository.save(taskJPA);
@@ -68,7 +101,9 @@ public class DataGenerator {
         TaskJPA adapterTaskJPA = new TaskJPA();
         adapterTaskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask");
         adapterTaskJPA.setName("Adapter Task");
-        TaskParameterJPA adapterParamURL = new TaskParameterJPA(adapterTaskJPA, "url", "http://localhost:8081");
+        TaskParameterJPA adapterParamURL = new TaskParameterJPA(
+            Long.valueOf(URL_PARAM_ID), "url", adapterTaskJPA
+        );
         adapterTaskJPA.setTaskParameters(Collections.singletonList(adapterParamURL));
         taskJPARepository.save(adapterTaskJPA);
 
@@ -78,7 +113,7 @@ public class DataGenerator {
         taskJPARepository.save(manualTask);
 
         FlowJPA flow = new FlowJPA();
-        flow.setId(1l);
+        flow.setId(7L);
         flow.setName("complexFlow");
         flow = flowJPARepository.save(flow);
 
