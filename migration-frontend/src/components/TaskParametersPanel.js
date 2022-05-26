@@ -8,14 +8,10 @@ import { useParams } from 'react-router-dom';
 
 const drawerWidth = 240;
 
-export default function TaskParametersPanel(params) {
-
-    const[flowName, setFlowName] = React.useState("New Flow");
+export default function TaskParametersPanel({taskName}) {
 
     const handleInput = (event) => {
-        setFlowName(event.target.value);
-        console.log(flowName);
-        params.changeFlowName(flowName);
+        
     }
 
     return (
@@ -31,14 +27,9 @@ export default function TaskParametersPanel(params) {
             <Toolbar />
             <Box sx={{ overflow: 'auto' }}>
                 <Typography sx={{ mt: 3, ml: 3, mb: 3 }}>TASK PARAMETERS</Typography>
-                <Typography>TASK: {params.taskName}</Typography>
                 <Divider />
-                <TextField
-                    label="Flow Name"
-                    variant="outlined"
-                    sx={{ ml: 2, mt: 3, mr: 2 }}
-                    onInput={handleInput}
-                />
+                <Typography sx={{ mt: 3, ml: 3, mb: 3 }} >Task Name: {taskName}</Typography>
+                
             </Box>
         </Drawer>
     );

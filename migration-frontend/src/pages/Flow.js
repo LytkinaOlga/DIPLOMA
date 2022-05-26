@@ -50,31 +50,13 @@ class Flow extends React.Component {
     }
 
     render() {
-        const myNodes = [
-            {
-                id: 1,
-                data: { label: 'Test node' },
-                position: { x: 500, y: 100 }
-            },
-            {
-                id: '2',
-                type: 'output',
-                data: { label: 'Test node 2' },
-                position: { x: 500, y: 150 }
-            },
-            {
-                id: '3',
-                type: 'output',
-                data: { label: 'Test node 3' },
-                position: { x: 500, y: 200 }
-            }
-        ];
         return (
             <div>
                 <FlowRenderer 
-                    flowNameValue = {this.state.flow.name}
-                    myNodess={this.state.flow.nodes}
-                    myEdgess={this.state.flow.edges} />
+                    initFlowId = {this.state.flow.id}
+                    initFlowName = {this.state.flow.name}
+                    flowNodes = {this.state.flow.nodes}
+                    flowEdges = {this.state.flow.edges}/>
             </div >
         )
     }

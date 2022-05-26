@@ -32,7 +32,7 @@ export default function FlowParametersPanel({defaultFlowName, changeFlowName}) {
                     label="Flow Name"
                     variant="outlined"
                     sx={{ ml: 2, mt: 3, mr: 2 }}
-                    defaultValue={defaultFlowName}
+                    value={defaultFlowName}
                     onChange={handleInput}
                 />
             </Box>

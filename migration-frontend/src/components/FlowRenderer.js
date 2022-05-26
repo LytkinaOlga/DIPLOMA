@@ -1,23 +1,17 @@
 import { Button, Typography } from '@mui/material';
-import { getThemeProps } from '@mui/system';
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
-    ReactFlowProvider,
-    addEdge,
-    useNodesState,
-    useEdgesState,
-    Controls,
-    Background,
-    MiniMap,
+    addEdge, Background, Controls, ReactFlowProvider, useEdgesState, useNodesState
 } from 'react-flow-renderer';
 import FlowService from '../services/FlowService';
 import FlowParametersPanel from './FlowParametersPanel';
 import LeftPanel from './LeftPanel';
+import TaskParametersPanel from './TaskParametersPanel';
 
 let id = 0;
 const getId = () => `${id++}`;
 
-export default function FlowRenderer({flowNameValue, myNodess, myEdgess}) {
+export default function FlowRenderer({initFlowId, initFlowName, flowNodes, flowEdges}) {
 
     const myNodes = [
         {
@@ -40,20 +34,21 @@ export default function FlowRenderer({flowNameValue, myNodess, myEdgess}) {
     const myEdges = [
         { id: 'e1-2', source: '1', target: '2' }
     ];
-    console.log(myNodess);
+    
     const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState(myNodess);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(myEdgess);
+    const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
-    const [flowName, setFlowName] = useState(flowNameValue);
+    const [flowName, setFlowName] = useState(initFlowName);
+    const [flowId, setFlowId] = useState(initFlowId);
+    const [isTaskSelected, setIsTaskSelected] = useState(false);
 
-    useEffect(()=> {
-        myNodess != undefined ? setNodes(myNodess) : setNodes([]);
-        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]); 
-        flowNameValue != undefined ? setFlowName(flowNameValue) : setFlowName('');    
-        console.log("1. floooow name");
-        console.log(flowName);      
-    }, [myNodess, myEdgess])
+    useEffect(() => {
+        flowNodes != undefined ? setNodes(flowNodes) : setNodes([]);
+        flowEdges != undefined ? setEdges(flowEdges) : setEdges([]);
+        initFlowName != undefined ? setFlowName(initFlowName) : setFlowName('');
+        initFlowId != undefined ? setFlowId(initFlowId) : setFlowId(null);
+    }, [flowNodes, flowEdges])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
@@ -95,16 +90,25 @@ export default function FlowRenderer({flowNameValue, myNodess, myEdgess}) {
     const changeFlowName = (flowNameValue) => {
         setFlowName(flowNameValue);
     }
-    
+
 
     const handleClick = () => {
-        FlowService.addFlow( flowName, nodes, edges).then((res) => {
+        FlowService.addFlow(flowId, flowName, nodes, edges).then((res) => {
             console.log(res.data);
         })
         alert("Flow saved");
     }
 
-    return (        
+    const onNodeClick = (event, node) => {
+        setIsTaskSelected(true);
+        console.log('click node', node);
+    };
+    
+    const onPaneClick = (event) => {
+        setIsTaskSelected(false);
+    }
+
+    return (
         <div >
             <ReactFlowProvider>
                 <div ref={reactFlowWrapper} style={{ height: 950 }}>
@@ -117,6 +121,8 @@ export default function FlowRenderer({flowNameValue, myNodess, myEdgess}) {
                         onInit={setReactFlowInstance}
                         onDrop={onDrop}
                         onDragOver={onDragOver}
+                        onNodeClick={onNodeClick}
+                        onPaneClick={onPaneClick}
                         fitView
                     >
                         <Controls />
@@ -124,20 +130,23 @@ export default function FlowRenderer({flowNameValue, myNodess, myEdgess}) {
                     </ReactFlow>
                 </div>
                 <LeftPanel />
-                <FlowParametersPanel 
-                    defaultFlowName={flowName}
-                    changeFlowName={changeFlowName}
-                    />
+                {
+                    (isTaskSelected) ? <TaskParametersPanel 
+                    taskName = 'Test'/> : <FlowParametersPanel
+                                                    defaultFlowName={flowName}
+                                                    changeFlowName={changeFlowName}
+                /> 
+                }
                 <Button
-                    sx={{ position: 'absolute', bottom: 50, right: 300 , zIndex: 4}}
+                    sx={{ position: 'absolute', bottom: 50, right: 300, zIndex: 4 }}
                     variant="contained"
                 >
                     <Typography>EXECUTE</Typography>
                 </Button>
                 <Button
-                    sx={{ position: 'absolute', bottom: 50, right: 430 , zIndex: 4}}
+                    sx={{ position: 'absolute', bottom: 50, right: 430, zIndex: 4 }}
                     variant="contained"
-                    onClick = {handleClick}
+                    onClick={handleClick}
                 >
                     <Typography>SAVE</Typography>
                 </Button>

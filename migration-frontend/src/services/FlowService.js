@@ -14,14 +14,18 @@ class FlowService {
         return axios.get(UPL_GET_FLOW_BY_ID + id)
     }
 
-    addFlow(name, nodes, edges) {
+    addFlow(id, name, nodes, edges) {
+        if (id === null)
+        {
+            id = 0;
+        }
         nodes.forEach((node, id) => {
             node.name = node.data.label
         });
         console.log("changedNodes");
         console.log(nodes);
         const flow = {
-            id: 1,
+            id: id,
             name: name,
             nodes: nodes,
             edges: edges
