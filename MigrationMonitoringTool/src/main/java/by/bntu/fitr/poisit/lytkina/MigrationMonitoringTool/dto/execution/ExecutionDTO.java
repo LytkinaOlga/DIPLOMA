@@ -15,7 +15,8 @@ import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Collecti
 
 @Data
 public class ExecutionDTO {
-    private Long id;
+    private String id;
+    private String flowId;
     private Date startDate;
     private Date endDate;
     private Collection<ExecutionNodeDTO> nodes;
@@ -23,7 +24,8 @@ public class ExecutionDTO {
 
 
     public ExecutionDTO(Execution execution) {
-        this.id = execution.getId();
+        this.id = execution.getId().toString();
+        this.flowId = execution.getFlowId().toString();
         this.startDate = execution.getStartDate();
         this.endDate = execution.getEndDate();
         this.nodes = mapCollect(execution.getNodes(), ExecutionNodeDTO::new);
