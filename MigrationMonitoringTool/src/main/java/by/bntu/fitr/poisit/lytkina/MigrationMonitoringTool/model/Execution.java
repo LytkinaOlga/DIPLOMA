@@ -1,17 +1,12 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FullFlowDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Date;
-
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.CollectionHelper.mapCollect;
 
 @Data
 public class Execution {
@@ -22,6 +17,7 @@ public class Execution {
     private Date endDate;
     private Collection<ExecutionNode> nodes;
     private Collection<EdgeJPA> edges;
+    private ExecutionStatus status;
 
     public Execution() {
     }
@@ -32,5 +28,6 @@ public class Execution {
         this.startDate = executionJPA.getStartDate();
         this.endDate = executionJPA.getEndDate();
         this.startedBy = executionJPA.getStartedBy();
+        this.status = executionJPA.getStatus();
     }
 }
