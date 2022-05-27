@@ -123,13 +123,14 @@ public class FlowRepository {
 
     private FlowJPA shallowSave(Flow flow) {
         Optional<FlowJPA> flowJPAOptional = flowRepository.findById(flow.getId());
+        FlowJPA flowJPA;
         if (flowJPAOptional.isPresent()) {
-            FlowJPA flowJPA = flowJPAOptional.get();
+            flowJPA = flowJPAOptional.get();
             flowJPA.shallowMerge(flow);
-            return flowJPA;
+            flowJPA.setModificationDate(new Date());
         } else {
-            FlowJPA newFlow = FlowJPA.shallowCopy(flow);
-            return flowRepository.save(newFlow);
+            flowJPA = FlowJPA.shallowCopy(flow);
         }
+        return flowRepository.save(flowJPA);
     }
 }

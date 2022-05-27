@@ -1,11 +1,8 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.EdgeDTO;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Execution;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.ExecutionNode;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionJPA;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Collection;
@@ -21,7 +18,7 @@ public class ExecutionDTO {
     private Date endDate;
     private Collection<ExecutionNodeDTO> nodes;
     private Collection<EdgeDTO> edges;
-
+    private String startedBy;
 
     public ExecutionDTO(Execution execution) {
         this.id = execution.getId().toString();
@@ -30,5 +27,6 @@ public class ExecutionDTO {
         this.endDate = execution.getEndDate();
         this.nodes = mapCollect(execution.getNodes(), ExecutionNodeDTO::new);
         this.edges = mapCollect(execution.getEdges(), EdgeDTO::new);
+        this.startedBy = execution.getStartedBy();
     }
 }

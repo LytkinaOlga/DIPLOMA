@@ -1,6 +1,5 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.rest;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FullFlowDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionPreviewDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionGraph;

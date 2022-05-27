@@ -15,13 +15,6 @@ import java.util.stream.Collectors;
 public class ExecutionGraphDTO {
     private Long id;
     private String name;
-
-    @JsonIgnore
-//    @JsonFormat(
-//        shape = JsonFormat.Shape.STRING,
-//        pattern = "dd-MM-yyyy hh:mm:ss"
-//    )
-    @DateTimeFormat(pattern="dd/MM/yyyy")
     private Date creationDate;
 
     private Collection<NodeDTO> nodes;
