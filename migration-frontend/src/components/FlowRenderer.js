@@ -1,22 +1,19 @@
 import { Button, Typography } from '@mui/material';
-import { getThemeProps } from '@mui/system';
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
-    ReactFlowProvider,
-    addEdge,
-    useNodesState,
-    useEdgesState,
-    Controls,
-    Background,
-    MiniMap,
+    addEdge, Background, Controls, ReactFlowProvider, useEdgesState, useNodesState
 } from 'react-flow-renderer';
 import FlowService from '../services/FlowService';
+import TaskService from '../services/TaskService';
+import FlowParametersPanel from './FlowParametersPanel';
 import LeftPanel from './LeftPanel';
+import TaskParametersPanel from './TaskParametersPanel';
 
 let id = 0;
 const getId = () => `${id++}`;
+const height = window.innerHeight;
 
-export default function FlowRenderer({myNodess, myEdgess}) {
+export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flowEdges }) {
 
     const myNodes = [
         {
@@ -39,17 +36,25 @@ export default function FlowRenderer({myNodess, myEdgess}) {
     const myEdges = [
         { id: 'e1-2', source: '1', target: '2' }
     ];
-    console.log(myNodess);
-    const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState(myNodess);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(myEdgess);
-    const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
-    useEffect(()=> {
-        myNodess != undefined ? setNodes(myNodess) : setNodes([]);
-        myEdgess != undefined ? setEdges(myEdgess) : setEdges([]);
-        
-    }, [myNodess, myEdgess])
+    const reactFlowWrapper = useRef(null);
+    const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges);
+    const [reactFlowInstance, setReactFlowInstance] = useState(null);
+    const [flowName, setFlowName] = useState(initFlowName);
+    const [flowId, setFlowId] = useState(initFlowId);
+    const [isTaskSelected, setIsTaskSelected] = useState(false);
+    const [tasks, setTasks] = useState([]);
+    const [selectedTaskParameters, setSelectedTaskParameters] = useState([]);
+    const [selectedTaskName, setSelectedTaskName] = useState([]);
+
+    useEffect(() => {
+        flowNodes != undefined ? setNodes(flowNodes) : setNodes([]);
+        flowEdges != undefined ? setEdges(flowEdges) : setEdges([]);
+        initFlowName != undefined ? setFlowName(initFlowName) : setFlowName('');
+        initFlowId != undefined ? setFlowId(initFlowId) : setFlowId(null);
+        TaskService.getTasks().then((res) => { setTasks(res.data) });
+    }, [flowNodes, flowEdges])
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
@@ -64,6 +69,7 @@ export default function FlowRenderer({myNodess, myEdgess}) {
 
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
             const type = event.dataTransfer.getData('application/reactflow');
+            const taskId = event.dataTransfer.getData('application/reactflow/taskId');
 
             // check if the dropped element is valid
             if (typeof type === 'undefined' || !type) {
@@ -74,29 +80,60 @@ export default function FlowRenderer({myNodess, myEdgess}) {
                 x: event.clientX - reactFlowBounds.left,
                 y: event.clientY - reactFlowBounds.top,
             });
+
             const newNode = {
                 id: getId(),
                 position,
                 data: { label: `${type}` },
+                taskId: taskId,
             };
 
             setNodes((nds) => nds.concat(newNode));
         },
         [reactFlowInstance]
     );
-    
 
-    function handleClick(){
-        FlowService.addFlow(nodes, edges).then((res) => {
-            console.log(res.data);
-        })
-        alert("Hi");
+    const changeFlowName = (flowNameValue) => {
+        setFlowName(flowNameValue);
     }
 
-    return (        
+
+    const handleClick = () => {
+        FlowService.addFlow(flowId, flowName, nodes, edges).then((res) => {
+            console.log(res.data);
+        })
+        alert("Flow saved");
+    }
+
+    const onNodeClick = (event, node) => {
+        setIsTaskSelected(true);
+        const taskId = node.taskId;
+        const task = tasks.filter(task => task.id === taskId);
+        console.log(task);
+        const selectedTaskParams = task[0].parameters;
+        const selectedTaskNameValue = task[0].name;
+        setSelectedTaskParameters(selectedTaskParams);
+        setSelectedTaskName(selectedTaskNameValue);
+        console.log(selectedTaskNameValue);
+        console.log(selectedTaskParams);
+    };
+
+    const onPaneClick = () => {
+        setIsTaskSelected(false);
+    }
+
+    const executeFlow = () => {
+        FlowService.executeFlow(flowId).then((res) => {
+            console.log(res.data);
+            const executionId = res.data;
+            window.location.href = '/execution/start/' + executionId;
+        })
+    }
+
+    return (
         <div >
             <ReactFlowProvider>
-                <div ref={reactFlowWrapper} style={{ height: 950 }}>
+                <div ref={reactFlowWrapper} style={{ height: (height) }}>
                     <ReactFlow
                         nodes={nodes}
                         edges={edges}
@@ -106,23 +143,38 @@ export default function FlowRenderer({myNodess, myEdgess}) {
                         onInit={setReactFlowInstance}
                         onDrop={onDrop}
                         onDragOver={onDragOver}
+                        onNodeClick={onNodeClick}
+                        onPaneClick={onPaneClick}
                         fitView
                     >
                         <Controls />
                         <Background />
                     </ReactFlow>
                 </div>
-                <LeftPanel />
+                <LeftPanel tasks={tasks} />
+                {
+                    (isTaskSelected) ? <TaskParametersPanel taskName={selectedTaskName} taskParams={selectedTaskParameters} /> :
+                        <FlowParametersPanel
+                            defaultFlowName={flowName}
+                            changeFlowName={changeFlowName}
+                        />
+                }
                 <Button
-                    sx={{ position: 'absolute', bottom: 50, right: 300 , zIndex: 4}}
+                    sx={{ position: 'absolute', bottom: 50, right: 300, zIndex: 4 }}
                     variant="contained"
+                    onClick={executeFlow}
                 >
-                    <Typography>EXECUTE</Typography>
+                    <Typography
+                    // component={Link}
+                    // to={"/executions"}
+                    // style={{ textDecoration: 'none', color: 'white' }}
+
+                    >  EXECUTE</Typography>
                 </Button>
                 <Button
-                    sx={{ position: 'absolute', bottom: 50, right: 430 , zIndex: 4}}
+                    sx={{ position: 'absolute', bottom: 50, right: 430, zIndex: 4 }}
                     variant="contained"
-                    onClick = {handleClick}
+                    onClick={handleClick}
                 >
                     <Typography>SAVE</Typography>
                 </Button>

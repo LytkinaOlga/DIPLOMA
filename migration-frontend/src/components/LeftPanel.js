@@ -22,20 +22,11 @@ import TaskService from '../services/TaskService';
 
 const drawerWidth = 240;
 
-export default function LeftPanel() {
-    const [tasks, setTasks] = useState([]);
+export default function LeftPanel({tasks}) {
 
-    useEffect(() => {
-        TaskService.getTasks().then((res) => { setTasks(res.data) });
-        console.log(tasks);
-    }, [])
-
-    const handleClick = () => {
-        alert('hello world');
-    }
-
-    const onDragStart = (event, nodeType) => {
+    const onDragStart = (event, nodeType, taskId) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.setData('application/reactflow/taskId', taskId);
         event.dataTransfer.effectAllowed = 'move';
     };
 
@@ -52,39 +43,9 @@ export default function LeftPanel() {
             <Box sx={{ overflow: 'auto' }}>
                 <Typography sx={{ mt: 3, ml: 3, mb: 3 }}>TASK CATALOG</Typography>
                 <Divider sx={{ mb: 2 }} />
-                {/* <List>
-                    {['File Loader', 'MasterList Creator', 'Amazon Adapter'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List> */}
-                {/* <Button variant="outlined" sx={{ ml: 1, width: 100 }} onDragStart={(event) => onDragStart(event, 'File Loader')} draggable>
-                    <Box>
-                        <InboxIcon sx={{ width: 50, height: 50 }} />
-                        <Typography variant='subtitle2'>File Loader</Typography>
-                    </Box>
-                </Button>
-                <Button variant="outlined" sx={{ ml: 2, width: 100, className: "dndnode" }} onDragStart={(event) => onDragStart(event, 'MasterList Creator')} draggable>
-                    <Box>
-                        <AddchartRoundedIcon sx={{ width: 50, height: 50 }} />
-                        <Typography variant='subtitle2'>MasterList Creator</Typography>
-                    </Box>
-                </Button>
-                <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, 'Amazon Adapter')} draggable>
-                    <Box>
-                        <BackupTableRoundedIcon sx={{ width: 50, height: 50 }} />
-                        <Typography variant='subtitle2'>Amazon Adapter</Typography>
-                    </Box>
-                </Button> */}
                 {
                     tasks.map((task) => (
-                        <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, task.name)} draggable>
+                        <Button variant="outlined" sx={{ ml: 1, width: 100, mt: 2 }} onDragStart={(event) => onDragStart(event, task.name, task.id)} draggable>
                             <Box>
                                 <BackupTableRoundedIcon sx={{ width: 50, height: 50 }} />
                                 <Typography variant='subtitle2'>{task.name}</Typography>
