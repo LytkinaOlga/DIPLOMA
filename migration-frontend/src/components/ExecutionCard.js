@@ -1,18 +1,20 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
 
-export default function ExecutionCard() {
+export default function ExecutionCard({execution}) {
   return (
     <Card sx={{ minWidth: 275, mt: 5 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          MIGRATION #1
+          Start: {execution.startDate} 
         </Typography>
-        <LinearProgress variant="determinate" />
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          End: {execution.endDate} 
+        </Typography>
+        <Typography>Status: {execution.status}</Typography>
       </CardContent>
     </Card>
   );
