@@ -1,13 +1,7 @@
-import { Button, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
     addEdge, Background, Controls, ReactFlowProvider, useEdgesState, useNodesState
 } from 'react-flow-renderer';
-import FlowService from '../services/FlowService';
-import TaskService from '../services/TaskService';
-import FlowParametersPanel from './FlowParametersPanel';
-import LeftPanel from './LeftPanel';
-import TaskParametersPanel from './TaskParametersPanel';
 
 let id = 0;
 const getId = () => `${id++}`;
@@ -47,12 +41,6 @@ export default function ExecutionRenderer({ flowNodes, flowEdges }) {
         flowEdges != undefined ? setEdges(flowEdges) : setEdges([]);
     }, [flowNodes, flowEdges])
 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
-
-    const onDragOver = useCallback((event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-    }, []);
 
     
 
@@ -74,10 +62,8 @@ export default function ExecutionRenderer({ flowNodes, flowEdges }) {
                         edges={edges}
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
-                        onConnect={onConnect}
                         onInit={setReactFlowInstance}
-                        
-                        onDragOver={onDragOver}
+                        nodesDraggable={false}
                         onNodeClick={onNodeClick}
                         onPaneClick={onPaneClick}
                         fitView

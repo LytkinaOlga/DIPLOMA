@@ -126,7 +126,7 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
         FlowService.executeFlow(flowId).then((res) => {
             console.log(res.data);
             const executionId = res.data;
-            window.location.href = '/execution/start/' + executionId;
+            window.location.href = '/execution/' + executionId;
         })
     }
 

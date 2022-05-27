@@ -79,7 +79,7 @@ export default function ExecutionsTabs({ runningExecutions, completedExecutions,
       <TabPanel value={value} index={3}>
         {
           allExecutions.map((execution) => (
-            <ExecutionCard execution={execution} />
+            <ExecutionCard execution={execution}/>
           ))
         }
       </TabPanel>
