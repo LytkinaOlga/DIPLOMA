@@ -1,6 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.EdgeDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Execution;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class ExecutionDTO {
     private Collection<ExecutionNodeDTO> nodes;
     private Collection<EdgeDTO> edges;
     private String startedBy;
+    private ExecutionStatus status;
 
     public ExecutionDTO(Execution execution) {
         this.id = execution.getId().toString();
@@ -28,5 +30,6 @@ public class ExecutionDTO {
         this.nodes = mapCollect(execution.getNodes(), ExecutionNodeDTO::new);
         this.edges = mapCollect(execution.getEdges(), EdgeDTO::new);
         this.startedBy = execution.getStartedBy();
+        this.status = execution.getStatus();
     }
 }
