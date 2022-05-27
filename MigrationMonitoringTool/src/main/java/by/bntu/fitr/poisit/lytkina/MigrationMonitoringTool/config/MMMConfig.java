@@ -3,6 +3,7 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.config;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionGraph;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.GraphNode;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.NodeExecutionWrapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ public class MMMConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         objectMapper.setDateFormat(df);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper;
     }
 }
