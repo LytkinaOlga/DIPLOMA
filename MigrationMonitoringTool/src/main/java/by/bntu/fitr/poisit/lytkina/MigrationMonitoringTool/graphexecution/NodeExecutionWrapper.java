@@ -93,6 +93,7 @@ public class NodeExecutionWrapper implements Runnable {
         taskParameters.put(Constants.ParamNames.CURRENT_FLOW_ID, flowId.toString());
         taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionId.toString());
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
+        taskParameters.put(Constants.ParamNames.NODE_ID, nodeJPA.getId().toString());
         // todo: remove
         taskParameters.put(Constants.ParamNames.NODE_PARAM_PREFIX + AdapterTask.URL_PARAM_ID, "http://localhost:8081");
 

@@ -75,5 +75,6 @@ public class FlowJPA {
     @PrePersist
     void createdAt() {
         this.creationDate = new Date();
+        this.modificationDate = new Date();
     }
 }
