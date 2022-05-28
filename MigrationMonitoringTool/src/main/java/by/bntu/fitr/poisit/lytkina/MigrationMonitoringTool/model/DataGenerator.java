@@ -137,6 +137,16 @@ public class DataGenerator {
             new NodeParameterJPA(node2, successRateParam, "0.5")
         ));
 
+        NodeJPA node3 = new NodeJPA();
+        node3.setName("Random Failing Adapter");
+        node3.setFlow(flow);
+        node3.setX(200.2);
+        node3.setY(200.2);
+        node3.setTask(randomFailingAdapterTask);
+        node3.setParameters(Arrays.asList(
+            new NodeParameterJPA(node2, successRateParam, "0.5")
+        ));
+
         node1 = nodeRepository.save(node1);
         node2 = nodeRepository.save(node2);
 

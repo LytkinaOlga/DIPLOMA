@@ -129,12 +129,20 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
 
     const onNodeClick = (event, node) => {
         setIsTaskSelected(true);
+        console.log(node);
         const taskId = node.taskId;
         const task = tasks.filter(task => task.id === taskId);
         console.log(task);
         const selectedTaskParams = task[0].parameters;
         const selectedTaskNameValue = task[0].name;
         const selectedTaskIdValue = task[0].id;
+        console.log(selectedTaskParams);
+
+        node.parameters.forEach((param) => {
+            const selectedTaskParam = selectedTaskParams.filter(taskParam => param.paramId === taskParam.id);
+            selectedTaskParam[0].value = param.value
+        });
+
         setSelectedTaskParameters(selectedTaskParams);
         setSelectedTaskName(selectedTaskNameValue);
         setSelectedTaskId(selectedTaskIdValue);

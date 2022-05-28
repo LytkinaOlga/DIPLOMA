@@ -46,6 +46,7 @@ export default function TaskParametersPanel({ taskId, taskName, taskParams, fill
                             sx={{ ml: 2, mt: 3, mr: 2 }}
                             label={param.name} 
                             name={param.id}
+                            value={param.value}
                             onChange={handleInput}
                             />
                     ))
