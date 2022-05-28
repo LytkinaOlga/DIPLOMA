@@ -1,26 +1,31 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.NumberFormat;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Data
 @NoArgsConstructor
 public class EdgeDTO {
-    @Positive
-    @NotBlank
-    private String id;
-    private String source;
-    private String target;
+    @PositiveOrZero
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+
+    @PositiveOrZero
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long source;
+
+    @PositiveOrZero
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long target;
 
     public EdgeDTO(EdgeJPA edgeJPA) {
-        this.id = edgeJPA.getId().toString();
-        this.source = edgeJPA.getNodeFrom().toString();
-        this.target = edgeJPA.getNodeTo().toString();
+        this.id = edgeJPA.getId();
+        this.source = edgeJPA.getNodeFrom();
+        this.target = edgeJPA.getNodeTo();
     }
 }
