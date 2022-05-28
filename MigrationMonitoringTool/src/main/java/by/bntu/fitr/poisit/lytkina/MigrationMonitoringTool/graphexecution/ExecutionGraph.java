@@ -8,6 +8,8 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ExecutionRepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.TransactionalParamUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ExecutionGraph {
     private static final Map<Long, ExecutionGraph> createdExecutions = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(ExecutionGraph.class);
 
     @Autowired
     ObjectProvider<NodeExecutionWrapper> nodeExecutionWrapperObjectProvider;
@@ -109,6 +112,12 @@ public class ExecutionGraph {
 
         graphFuture.thenRun(() -> {
             paramUpdater.updateExecution(executionId, ExecutionStatus.SUCCEEDED, null, new Date());
+        });
+
+        graphFuture.exceptionally(e -> {
+            logger.error("Execution failed, flowId: {}, executionId: {}", flowId, executionId, e);
+            paramUpdater.updateExecution(executionId, ExecutionStatus.FAILED, null, new Date(), e.getMessage());
+            return null;
         });
 
         return graphFuture;

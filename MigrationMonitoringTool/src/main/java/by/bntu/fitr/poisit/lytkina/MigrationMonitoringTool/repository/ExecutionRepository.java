@@ -62,6 +62,8 @@ public class ExecutionRepository {
         execution.setEndDate(executionJPA.getEndDate());
         execution.setNodes(executionNodes);
         execution.setEdges(flow.getEdges());
+        execution.setStatus(executionJPA.getStatus());
+        execution.setErrorMessage(executionJPA.getErrorMessage());
 
         return Optional.of(execution);
     }

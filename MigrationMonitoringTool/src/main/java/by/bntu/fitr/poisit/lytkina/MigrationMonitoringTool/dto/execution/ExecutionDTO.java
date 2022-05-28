@@ -24,6 +24,7 @@ public class ExecutionDTO {
     @PositiveOrZero
     @JsonSerialize(using = ToStringSerializer.class)
     private Long flowId;
+    private ExecutionStatus status;
     private Date startDate;
     private Date endDate;
     @Valid
@@ -31,7 +32,7 @@ public class ExecutionDTO {
     @Valid
     private Collection<EdgeDTO> edges;
     private String startedBy;
-    private ExecutionStatus status;
+    private String errorMessage;
 
     public ExecutionDTO(Execution execution) {
         this.id = execution.getId();
@@ -42,5 +43,6 @@ public class ExecutionDTO {
         this.edges = mapCollect(execution.getEdges(), EdgeDTO::new);
         this.startedBy = execution.getStartedBy();
         this.status = execution.getStatus();
+        this.errorMessage = execution.getErrorMessage();
     }
 }

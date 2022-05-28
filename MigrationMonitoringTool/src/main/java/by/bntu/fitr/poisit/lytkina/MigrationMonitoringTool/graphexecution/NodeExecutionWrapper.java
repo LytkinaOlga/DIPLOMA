@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames.NODE_PARAM_PREFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
 
 @NoArgsConstructor
 public class NodeExecutionWrapper implements Runnable {
@@ -49,7 +50,11 @@ public class NodeExecutionWrapper implements Runnable {
         } catch (Exception e) {
             logger.debug("Node execution failed, node: " + nodeId);
             paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.FAILED, null, new Date());
-            throw new RuntimeException("Node execution failed, node: " + nodeId, e);
+            throw new RuntimeException(
+                "Node execution failed, node: " + nodeId
+                    + ". \nOriginal message: " + e.getMessage(),
+                e
+            );
         }
         postExecute();
     }
@@ -95,7 +100,7 @@ public class NodeExecutionWrapper implements Runnable {
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
         taskParameters.put(Constants.ParamNames.NODE_ID, nodeJPA.getId().toString());
         // todo: remove
-        taskParameters.put(Constants.ParamNames.NODE_PARAM_PREFIX + AdapterTask.URL_PARAM_ID, "http://localhost:8081");
+        taskParameters.put(Constants.ParamNames.NODE_PARAM_PREFIX + URL_PARAM_ID, "http://localhost:8081");
 
         nodeJPA.getParameters().forEach(parameterJPA -> {
             taskParameters.put(

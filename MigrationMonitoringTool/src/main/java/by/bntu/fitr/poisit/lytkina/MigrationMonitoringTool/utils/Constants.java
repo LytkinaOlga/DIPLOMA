@@ -10,4 +10,30 @@ public interface Constants {
         String NODE_NAME = "NODE_NAME";
         String NODE_ID = "NODE_ID";
     }
+
+    interface Tasks {
+        interface TestTask {
+            Long ID = 1L;
+            Long DELAY_PARAM_ID = 1L;
+            Long MESSAGE_PARAM_ID = 2L;
+        }
+        interface ManualTask {
+            Long ID = 2L;
+        }
+        interface MasterListCreator {
+            Long ID = 3L;
+            Long ENTITY_TABLE_PARAM_ID = 5L;
+            Long ENTITY_COLUMN_PARAM_ID = 6L;
+
+        }
+        interface Adapter {
+            Long ID = 5L;
+            Long URL_PARAM_ID = 3L;
+
+        }
+        interface RandomFailingAdapter {
+            Long ID = 5L;
+            Long SUCCESS_RATE_PARAM_ID = 4L;
+        }
+    }
 }

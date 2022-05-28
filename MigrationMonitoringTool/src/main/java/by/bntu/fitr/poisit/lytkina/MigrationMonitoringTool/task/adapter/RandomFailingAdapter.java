@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO.ML_TABLE_PREFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.RandomFailingAdapter.SUCCESS_RATE_PARAM_ID;
 
 public class RandomFailingAdapter extends AbstractTask {
-    public static final String SUCCESS_RATE_PARAM_ID = "4";
     @Override
     public void run() {
 

@@ -19,5 +19,8 @@ public class FlowPreviewDTO {
         this.id = flow.getId();
         this.name = flow.getName();
         this.creationDate = flow.getCreationDate();
+        this.modificationDate = flow.getModificationDate();
+        this.author = flow.getAuthor();
+        this.description = flow.getDescription();
     }
 }

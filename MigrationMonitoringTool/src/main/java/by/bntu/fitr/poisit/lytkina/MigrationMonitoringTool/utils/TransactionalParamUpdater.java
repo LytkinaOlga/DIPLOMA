@@ -42,6 +42,11 @@ public class TransactionalParamUpdater {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateExecution(Long executionId, ExecutionStatus status, Date startDate, Date endDate) {
+        updateExecution(executionId, status, startDate, endDate, null);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateExecution(Long executionId, ExecutionStatus status, Date startDate, Date endDate, String error_message) {
         ExecutionJPA executionJPA = executionJPARepository.findById(executionId)
             .orElseThrow(() -> new RuntimeException("Failed to get execution " + executionId));
         if (status != null) {
@@ -52,6 +57,9 @@ public class TransactionalParamUpdater {
         }
         if (endDate != null) {
             executionJPA.setEndDate(endDate);
+        }
+        if (error_message != null) {
+            executionJPA.setErrorMessage(error_message);
         }
         executionJPARepository.save(executionJPA);
     }

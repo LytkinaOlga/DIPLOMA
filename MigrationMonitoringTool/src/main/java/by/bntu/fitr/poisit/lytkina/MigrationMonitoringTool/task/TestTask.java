@@ -3,10 +3,10 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 import org.springframework.util.StringUtils;
 
-public class TestTask extends AbstractTask {
-    public static final String DELAY_PARAM_ID = "1";
-    public static final String MESSAGE_PARAM_ID = "2";
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.TestTask.DELAY_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.TestTask.MESSAGE_PARAM_ID;
 
+public class TestTask extends AbstractTask {
     @Override
     public void run() {
         String nodeName = taskParameters.get(Constants.ParamNames.NODE_NAME);

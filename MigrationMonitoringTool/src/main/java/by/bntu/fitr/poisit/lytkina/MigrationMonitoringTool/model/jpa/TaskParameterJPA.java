@@ -17,6 +17,10 @@ public class TaskParameterJPA {
     @ManyToOne
     private TaskJPA task;
 
+    public TaskParameterJPA(Long id) {
+        this.id = id;
+    }
+
     public TaskParameterJPA(Long id, String name, TaskJPA task) {
         this.id = id;
         this.name = name;

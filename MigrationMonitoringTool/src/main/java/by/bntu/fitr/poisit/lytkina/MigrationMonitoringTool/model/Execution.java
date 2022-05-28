@@ -18,6 +18,7 @@ public class Execution {
     private Collection<ExecutionNode> nodes;
     private Collection<EdgeJPA> edges;
     private ExecutionStatus status;
+    private String errorMessage;
 
     public Execution() {
     }
@@ -29,5 +30,6 @@ public class Execution {
         this.endDate = executionJPA.getEndDate();
         this.startedBy = executionJPA.getStartedBy();
         this.status = executionJPA.getStatus();
+        this.errorMessage = executionJPA.getErrorMessage();
     }
 }
