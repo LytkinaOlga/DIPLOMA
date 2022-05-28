@@ -13,7 +13,7 @@ let id = 0;
 const getId = () => `${id++}`;
 const height = window.innerHeight;
 
-export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flowEdges }) {
+export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flowEdges, initFlowDescription }) {
 
     const myNodes = [
         {
@@ -42,16 +42,20 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
     const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
     const [flowName, setFlowName] = useState(initFlowName);
+    const [flowDescription, setFlowDescription] = useState(initFlowDescription);
     const [flowId, setFlowId] = useState(initFlowId);
     const [isTaskSelected, setIsTaskSelected] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [selectedTaskParameters, setSelectedTaskParameters] = useState([]);
     const [selectedTaskName, setSelectedTaskName] = useState([]);
+    const [selectedTaskId, setSelectedTaskId] = useState([]);
+    const [taskParametersWithValue, setTaskParametersWithValue] = useState({});
 
     useEffect(() => {
         flowNodes != undefined ? setNodes(flowNodes) : setNodes([]);
         flowEdges != undefined ? setEdges(flowEdges) : setEdges([]);
         initFlowName != undefined ? setFlowName(initFlowName) : setFlowName('');
+        initFlowDescription != undefined ? setFlowDescription(initFlowDescription) : setFlowDescription('');
         initFlowId != undefined ? setFlowId(initFlowId) : setFlowId(null);
         TaskService.getTasks().then((res) => { setTasks(res.data) });
     }, [flowNodes, flowEdges])
@@ -97,9 +101,27 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
         setFlowName(flowNameValue);
     }
 
+    const changeFlowDescription = (flowDescriptionValue) => {
+        setFlowDescription(flowDescriptionValue);
+    }
 
-    const handleClick = () => {
-        FlowService.addFlow(flowId, flowName, nodes, edges).then((res) => {
+    const fillTastParameters = (taskWithParams) => {
+        setTaskParametersWithValue(taskWithParams);
+        console.log("taskWithParams");
+        console.log(taskWithParams);
+        console.log("nodes");
+        console.log(nodes);
+        const node = nodes.filter(node => node.taskId === taskWithParams.taskId);
+        console.log("node[0]" + node[0])
+        node[0].nodeParameters = taskWithParams.taskParams;
+        console.log(node[0]);
+        setNodes(nodes);
+    }
+
+    const saveFlow = () => {
+        console.log("nodes before saving");
+        console.log(nodes);
+        FlowService.addFlow(flowId, flowName, flowDescription, nodes, edges).then((res) => {
             console.log(res.data);
         })
         alert("Flow saved");
@@ -107,15 +129,23 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
 
     const onNodeClick = (event, node) => {
         setIsTaskSelected(true);
+        console.log(node);
         const taskId = node.taskId;
         const task = tasks.filter(task => task.id === taskId);
         console.log(task);
         const selectedTaskParams = task[0].parameters;
         const selectedTaskNameValue = task[0].name;
+        const selectedTaskIdValue = task[0].id;
+        console.log(selectedTaskParams);
+
+        node.parameters.forEach((param) => {
+            const selectedTaskParam = selectedTaskParams.filter(taskParam => param.paramId === taskParam.id);
+            selectedTaskParam[0].value = param.value
+        });
+
         setSelectedTaskParameters(selectedTaskParams);
         setSelectedTaskName(selectedTaskNameValue);
-        console.log(selectedTaskNameValue);
-        console.log(selectedTaskParams);
+        setSelectedTaskId(selectedTaskIdValue);
     };
 
     const onPaneClick = () => {
@@ -126,7 +156,7 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
         FlowService.executeFlow(flowId).then((res) => {
             console.log(res.data);
             const executionId = res.data;
-            window.location.href = '/execution/start/' + executionId;
+            window.location.href = '/execution/' + executionId;
         })
     }
 
@@ -153,10 +183,17 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
                 </div>
                 <LeftPanel tasks={tasks} />
                 {
-                    (isTaskSelected) ? <TaskParametersPanel taskName={selectedTaskName} taskParams={selectedTaskParameters} /> :
+                    (isTaskSelected) ? <TaskParametersPanel 
+                                            taskId={selectedTaskId}
+                                            taskName={selectedTaskName} 
+                                            taskParams={selectedTaskParameters} 
+                                            fillTastParameters={fillTastParameters}
+                                            /> :
                         <FlowParametersPanel
                             defaultFlowName={flowName}
                             changeFlowName={changeFlowName}
+                            defaultFlowDescription = {flowDescription}
+                            changeFlowDescription={changeFlowDescription}
                         />
                 }
                 <Button
@@ -174,7 +211,7 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
                 <Button
                     sx={{ position: 'absolute', bottom: 50, right: 430, zIndex: 4 }}
                     variant="contained"
-                    onClick={handleClick}
+                    onClick={saveFlow}
                 >
                     <Typography>SAVE</Typography>
                 </Button>

@@ -1,8 +1,6 @@
-import { Container, Typography } from '@mui/material';
 import * as React from 'react';
 import FlowRenderer from '../components/FlowRenderer';
 import FlowService from '../services/FlowService';
-import { Routes, Route, useParams } from 'react-router-dom';
 
 
 class Flow extends React.Component {
@@ -13,6 +11,7 @@ class Flow extends React.Component {
             {
                 id: "",
                 name: "",
+                description: "",
                 createdDate: "",
                 nodes: [{
                     id: "",
@@ -52,11 +51,13 @@ class Flow extends React.Component {
     render() {
         return (
             <div>
-                <FlowRenderer 
-                    initFlowId = {this.state.flow.id}
-                    initFlowName = {this.state.flow.name}
-                    flowNodes = {this.state.flow.nodes}
-                    flowEdges = {this.state.flow.edges}/>
+                <FlowRenderer
+                    initFlowId={this.state.flow.id}
+                    initFlowName={this.state.flow.name}
+                    flowNodes={this.state.flow.nodes}
+                    flowEdges={this.state.flow.edges}
+                    initFlowDescription={this.state.flow.description}
+                />
             </div >
         )
     }

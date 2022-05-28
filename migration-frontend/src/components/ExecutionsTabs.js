@@ -1,9 +1,9 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import * as React from 'react';
 import ExecutionCard from './ExecutionCard';
 
 function TabPanel(props) {
@@ -38,7 +38,7 @@ function a11yProps(index) {
   };
 }
 
-export default function ExecutionsTabs() {
+export default function ExecutionsTabs({ runningExecutions, completedExecutions, upcomingExecutions, allExecutions }) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -56,19 +56,32 @@ export default function ExecutionsTabs() {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <ExecutionCard />
-        <ExecutionCard />
-        <ExecutionCard />
-        <ExecutionCard />
+        {
+          runningExecutions.map((execution) => (
+            <ExecutionCard execution={execution} />
+          ))
+        }
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        {
+          completedExecutions.map((execution) => (
+            <ExecutionCard execution={execution} />
+          ))
+        }
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Item Three
+        {
+          upcomingExecutions.map((execution) => (
+            <ExecutionCard execution={execution} />
+          ))
+        }
       </TabPanel>
       <TabPanel value={value} index={3}>
-        Item Four
+        {
+          allExecutions.map((execution) => (
+            <ExecutionCard execution={execution}/>
+          ))
+        }
       </TabPanel>
     </Box>
   );

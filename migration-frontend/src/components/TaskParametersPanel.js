@@ -1,16 +1,29 @@
 import { Drawer, TextField } from '@mui/material';
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useParams } from 'react-router-dom';
+import * as React from 'react';
 
 const drawerWidth = 240;
 
-export default function TaskParametersPanel({ taskName, taskParams }) {
-    const params = Object.keys(taskParams);
-    console.log(params[0]);
+export default function TaskParametersPanel({ taskId, taskName, taskParams, fillTastParameters }) {
+
+    const handleInput = (event) => {
+        const id = event.target.name;
+        const paramValue = event.target.value;
+        const taskWithParams = {
+            taskId: taskId,
+            taskParams: []
+        }
+        const taskParam = {
+            paramId: id,
+            paramValue: paramValue
+        }
+        taskWithParams.taskParams.push(taskParam);
+        fillTastParameters(taskWithParams);
+    }
+
     return (
         <Drawer
             variant="permanent"
@@ -27,13 +40,17 @@ export default function TaskParametersPanel({ taskName, taskParams }) {
                 <Divider />
                 <Typography sx={{ mt: 3, ml: 3, mb: 3 }} >Task Name: {taskName}</Typography>
                 {
-                     params.map((param) => (
-                        <TextField 
+                    taskParams.map((param) => (
+                        <TextField
                             variant="outlined"
                             sx={{ ml: 2, mt: 3, mr: 2 }}
-                            label={param} />
-                     ))
-                }              
+                            label={param.name} 
+                            name={param.id}
+                            value={param.value}
+                            onChange={handleInput}
+                            />
+                    ))
+                }
             </Box>
         </Drawer>
     );
