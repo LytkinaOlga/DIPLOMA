@@ -1,6 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FullFlowDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FlowDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.EdgeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
@@ -32,7 +32,7 @@ public class Flow {
         this.modificationDate = flowJPA.getModificationDate();
     }
 
-    public Flow(FullFlowDTO flowDTO) {
+    public Flow(FlowDTO flowDTO) {
         this.id = flowDTO.getId();
         this.name = flowDTO.getName();
         this.creationDate = flowDTO.getCreationDate();

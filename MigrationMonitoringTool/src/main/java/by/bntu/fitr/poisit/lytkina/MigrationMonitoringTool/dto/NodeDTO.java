@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.CollectionHelper.mapCollect;
@@ -19,7 +20,6 @@ public class NodeDTO {
     private NodePositionDTO position;
     private String taskId;
 
-    @JsonProperty("parameters")
     private List<NodeParameterDTO> nodeParametersDTO;
 
     public NodeDTO(NodeJPA nodeJPA) {
@@ -31,5 +31,13 @@ public class NodeDTO {
         );
         this.taskId = nodeJPA.getTask().getId().toString();
         this.nodeParametersDTO = mapCollect(nodeJPA.getParameters(), NodeParameterDTO::new);
+    }
+
+    @JsonProperty("parameters")
+    public List<NodeParameterDTO> getNodeParametersDTO() {
+        if (nodeParametersDTO == null) {
+            nodeParametersDTO = new ArrayList<>();
+        }
+        return nodeParametersDTO;
     }
 }
