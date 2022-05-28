@@ -36,7 +36,7 @@ public class RandomFailingAdapter extends AbstractTask {
                     "MERGE INTO " + adapterTableName + " x\n" +
                         "USING (\n" +
                         "    SELECT entity_id, status, case when (status = 'FAILED') \n"
-                        + "then 'Failed by random failing adapter ''' + nodeName + ''' (' + nodeId + ')' else null end error_message FROM (\n" +
+                        + "then 'Failed by random failing adapter ''" + nodeName + "'' (" + nodeId + ")' else null end error_message FROM (\n" +
                         "        select entity_id, case when (dbms_random.value > 0.5) then 'FAILED' else 'SUCCEED' end status\n" +
                         "        from " + adapterTableName + "\n" +
                         "    )\n" +
@@ -48,9 +48,9 @@ public class RandomFailingAdapter extends AbstractTask {
                 count = jdbcTemplate.update(
                     "insert into " + adapterTableName + "\n" +
                         "select entity_id, status, case when status = 'FAILED' " +
-                        "then 'Failed by random failing adapter ''' + nodeName + ''' (' + nodeId + ')' else null end error_message\n" +
+                        "then 'Failed by random failing adapter ''" + nodeName + "'' (" + nodeId + ")' else null end error_message\n" +
                         "from (select entity_id, case when (random() > " + successRate + ") then 'FAILED' else 'SUCCEED' end status\n" +
-                        "      from + " + adapterTableName + ") f\n" +
+                        "      from " + adapterTableName + ") f\n" +
                         "on conflict (entity_id) do update set status = excluded.status, error_message = excluded.error_message"
                 );
             } else {
