@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.CollectionHelper.mapCollect;
+
 @Entity
 @Table(name = "nodes")
 @Getter
@@ -63,6 +65,9 @@ public class NodeJPA {
             this.setX(nodeDTO.getPosition().getX());
             this.setY(nodeDTO.getPosition().getY());
         }
+        this.parameters = mapCollect(nodeDTO.getNodeParametersDTO(),
+            n -> new NodeParameterJPA(n, Long.valueOf(nodeDTO.getId()))
+        );
     }
 
     public static NodeJPA copyWithoutFlowAndEdgesAndId(NodeJPA orig) {
@@ -71,6 +76,10 @@ public class NodeJPA {
         newNode.setX(orig.getX());
         newNode.setY(orig.getY());
         newNode.setTask(orig.getTask());
+        newNode.parameters = mapCollect(orig.getParameters(), p -> {
+            p.setNode(newNode);
+            return p;
+        });
 
         return newNode;
     }

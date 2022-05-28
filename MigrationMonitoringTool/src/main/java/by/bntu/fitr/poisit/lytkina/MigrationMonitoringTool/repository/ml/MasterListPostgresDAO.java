@@ -69,7 +69,7 @@ public class MasterListPostgresDAO implements MasterListDAO {
         );
         logger.debug("Merged {} rows from adapter master list table '{}'", count, mlAdapterTableName);
 
-//        jdbcTemplate.execute("drop table " + mlAdapterTableName);
+        jdbcTemplate.execute("drop table " + mlAdapterTableName);
         logger.debug("Dropped adapter master list table '{}' ", mlAdapterTableName);
     }
 }
