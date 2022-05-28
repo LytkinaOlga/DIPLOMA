@@ -3,25 +3,32 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.ExecutionNode;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 public class ExecutionNodeDTO {
-    private String nodeId;
+    @PositiveOrZero
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long nodeId;
     private String nodeName;
-    private String executionId;
+    @PositiveOrZero
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long executionId;
     private ExecutionStatus status;
     private Date startDate;
     private Date endDate;
 
     public ExecutionNodeDTO(ExecutionNode executionNode) {
-        this.nodeId = executionNode.getNodeId().toString();
+        this.nodeId = executionNode.getNodeId();
         this.nodeName = executionNode.getNodeName();
-        this.executionId = executionNode.getExecutionId().toString();
+        this.executionId = executionNode.getExecutionId();
         this.status = executionNode.getStatus();
         this.startDate = executionNode.getStartDate();
         this.endDate = executionNode.getEndDate();

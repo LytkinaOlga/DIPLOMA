@@ -31,4 +31,6 @@ public class ExecutionJPA {
     private Date endDate;
 
     private String startedBy;
+
+    private String errorMessage;
 }

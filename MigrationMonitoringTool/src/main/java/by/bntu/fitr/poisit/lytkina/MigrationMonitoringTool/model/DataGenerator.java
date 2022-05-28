@@ -1,25 +1,23 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.*;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.EdgeJPARepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.FlowJPARepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.TaskJPARepository;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.*;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.MasterListCreationTask.ENTITY_ID_COLUMN_PARAM_ID;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.MasterListCreationTask.ENTITY_TABLE_PARAM_ID;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask.DELAY_PARAM_ID;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask.MESSAGE_PARAM_ID;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask.URL_PARAM_ID;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.RandomFailingAdapter.SUCCESS_RATE_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_COLUMN_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_TABLE_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.RandomFailingAdapter.SUCCESS_RATE_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.TestTask.DELAY_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.TestTask.MESSAGE_PARAM_ID;
 
 @Component
 public class DataGenerator {
@@ -35,32 +33,25 @@ public class DataGenerator {
     @Autowired
     TaskJPARepository taskJPARepository;
 
+    @Autowired
+    TaskParameterJPARepository taskParameterJPARepository;
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void generateSimpleFlow() {
+    public void generateTwoTestTasksFlow() {
         FlowJPA flow = new FlowJPA();
-        flow.setId(1L);
         flow.setName("simpleFlow");
         flow = flowJPARepository.save(flow);
 
-        TaskJPA taskJPA = new TaskJPA();
-        taskJPA.setId(1L);
-        taskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask");
-        taskJPA.setName("Test Task");
-        TaskParameterJPA messageParam = new TaskParameterJPA(
-            Long.valueOf(MESSAGE_PARAM_ID), "message", taskJPA
-        );
-        TaskParameterJPA delayParam = new TaskParameterJPA(
-            Long.valueOf(DELAY_PARAM_ID), "delay", taskJPA
-        );
-        taskJPA.setTaskParameters(Arrays.asList(messageParam, delayParam));
-        taskJPA = taskJPARepository.save(taskJPA);
+        TaskJPA testTaskJPA = taskJPARepository.getById(Constants.Tasks.TestTask.ID);
+        TaskParameterJPA messageParam = taskParameterJPARepository.getById(MESSAGE_PARAM_ID);
+        TaskParameterJPA delayParam = taskParameterJPARepository.getById(DELAY_PARAM_ID);
 
         NodeJPA node1 = new NodeJPA();
         node1.setName("X");
         node1.setFlow(flow);
         node1.setX(100.1);
         node1.setY(100.1);
-        node1.setTask(taskJPA);
+        node1.setTask(testTaskJPA);
         node1.setParameters(Arrays.asList(
             new NodeParameterJPA(node1, messageParam, "message of node X"),
             new NodeParameterJPA(node1, delayParam, "3000")
@@ -71,7 +62,7 @@ public class DataGenerator {
         node2.setFlow(flow);
         node2.setX(200.2);
         node2.setY(200.2);
-        node2.setTask(taskJPA);
+        node2.setTask(testTaskJPA);
         node2.setParameters(Arrays.asList(
             new NodeParameterJPA(node2, messageParam, "message of node Y"),
             new NodeParameterJPA(node2, delayParam, "1000")
@@ -86,6 +77,29 @@ public class DataGenerator {
         edgeRepository.save(edge1);
     }
 
+    @Transactional
+    public void generateSingleTaskFlow(Long taskId, NodeParameterJPA ... params) {
+        FlowJPA flow = new FlowJPA();
+        flow.setName("singleTaskFlow");
+        flow = flowJPARepository.save(flow);
+
+        NodeJPA node1 = new NodeJPA();
+        node1.setName("single task");
+        node1.setFlow(flow);
+        node1.setTask(taskJPARepository.getById(taskId));
+
+        List<NodeParameterJPA> nodeParams = new ArrayList<>();
+        for (NodeParameterJPA param : params) {
+            TaskParameterJPA taskParam = taskParameterJPARepository.getById(param.getParameter().getId());
+            NodeParameterJPA nodeParam = new NodeParameterJPA(node1, taskParam, param.getValue());
+            nodeParams.add(nodeParam);
+        }
+
+        node1.setParameters(nodeParams);
+
+        nodeRepository.save(node1);
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateSimpleAdapterFlow() {
         FlowJPA flow = new FlowJPA();
@@ -93,28 +107,12 @@ public class DataGenerator {
         flow.setName("simpleFlow");
         flow = flowJPARepository.save(flow);
 
-        TaskJPA masterListTask = new TaskJPA();
-        masterListTask.setId(1L);
-        masterListTask.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.MasterListCreationTask");
-        masterListTask.setName("Master List Creation Task");
-        TaskParameterJPA entityTableParam = new TaskParameterJPA(
-            Long.valueOf(ENTITY_TABLE_PARAM_ID), "Entity Table", masterListTask
-        );
-        TaskParameterJPA entityIdColumnParam = new TaskParameterJPA(
-            Long.valueOf(ENTITY_ID_COLUMN_PARAM_ID), "Entity Column", masterListTask
-        );
-        masterListTask.setTaskParameters(Arrays.asList(entityTableParam, entityIdColumnParam));
-        masterListTask = taskJPARepository.save(masterListTask);
+        TaskJPA masterListTask = taskJPARepository.getById(Constants.Tasks.MasterListCreator.ID);
+        TaskParameterJPA entityTableParam = taskParameterJPARepository.getById(ENTITY_TABLE_PARAM_ID);
+        TaskParameterJPA entityIdColumnParam = taskParameterJPARepository.getById(ENTITY_COLUMN_PARAM_ID);
 
-        TaskJPA randomFailingAdapterTask = new TaskJPA();
-        randomFailingAdapterTask.setId(2L);
-        randomFailingAdapterTask.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.RandomFailingAdapter");
-        randomFailingAdapterTask.setName("Random Failing Adapter Task");
-        TaskParameterJPA successRateParam = new TaskParameterJPA(
-            Long.valueOf(SUCCESS_RATE_PARAM_ID), "Success Rate", randomFailingAdapterTask
-        );
-        randomFailingAdapterTask.setTaskParameters(Arrays.asList(successRateParam));
-        randomFailingAdapterTask = taskJPARepository.save(randomFailingAdapterTask);
+        TaskJPA randomFailingAdapterTask = taskJPARepository.getById(Constants.Tasks.RandomFailingAdapter.ID);
+        TaskParameterJPA successRateParam = taskParameterJPARepository.getById(SUCCESS_RATE_PARAM_ID);
 
         NodeJPA node1 = new NodeJPA();
         node1.setName("Master List Creation");
@@ -158,32 +156,14 @@ public class DataGenerator {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateComplexFlow() {
-        TaskJPA taskJPA = new TaskJPA();
-        taskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.TestTask");
-        taskJPA.setName("Logging Task");
-        TaskParameterJPA loggingTaskParameterJPA1 = new TaskParameterJPA(
-            Long.valueOf(MESSAGE_PARAM_ID), "message", taskJPA
-        );
-        TaskParameterJPA loggingTaskParameterJPA2 = new TaskParameterJPA(
-            Long.valueOf(DELAY_PARAM_ID), "delay", taskJPA
-        );
-        taskJPA.setTaskParameters(Arrays.asList(loggingTaskParameterJPA1, loggingTaskParameterJPA2));
+        TaskJPA testTaskJPA = taskJPARepository.getById(Constants.Tasks.TestTask.ID);
+        TaskParameterJPA messageParameterJPA = taskParameterJPARepository.getById(MESSAGE_PARAM_ID);
+        TaskParameterJPA delayParameterJPA = taskParameterJPARepository.getById(DELAY_PARAM_ID);
 
-        taskJPARepository.save(taskJPA);
+        TaskJPA adapterTaskJPA = taskJPARepository.getById(Constants.Tasks.Adapter.ID);
+        TaskParameterJPA adapterParamURL = taskParameterJPARepository.getById(URL_PARAM_ID);
 
-        TaskJPA adapterTaskJPA = new TaskJPA();
-        adapterTaskJPA.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask");
-        adapterTaskJPA.setName("Adapter Task");
-        TaskParameterJPA adapterParamURL = new TaskParameterJPA(
-            Long.valueOf(URL_PARAM_ID), "url", adapterTaskJPA
-        );
-        adapterTaskJPA.setTaskParameters(Collections.singletonList(adapterParamURL));
-        taskJPARepository.save(adapterTaskJPA);
-
-        TaskJPA manualTask = new TaskJPA();
-        manualTask.setClassName("by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.ManualTask");
-        manualTask.setName("Manual Task");
-        taskJPARepository.save(manualTask);
+        TaskJPA manualTask = taskJPARepository.getById(Constants.Tasks.ManualTask.ID);
 
         FlowJPA flow = new FlowJPA();
         flow.setId(7L);
@@ -203,32 +183,32 @@ public class DataGenerator {
         NodeJPA nodeC = new NodeJPA();
         nodeC.setName("C");
         nodeC.setFlow(flow);
-        nodeC.setTask(taskJPA);
+        nodeC.setTask(testTaskJPA);
 
         NodeJPA nodeD = new NodeJPA();
         nodeD.setName("D");
         nodeD.setFlow(flow);
-        nodeD.setTask(taskJPA);
+        nodeD.setTask(testTaskJPA);
 
         NodeJPA nodeE = new NodeJPA();
         nodeE.setName("E");
         nodeE.setFlow(flow);
-        nodeE.setTask(taskJPA);
+        nodeE.setTask(testTaskJPA);
 
         NodeJPA nodeF = new NodeJPA();
         nodeF.setName("F");
         nodeF.setFlow(flow);
-        nodeF.setTask(taskJPA);
+        nodeF.setTask(testTaskJPA);
 
         NodeJPA nodeG = new NodeJPA();
         nodeG.setName("G");
         nodeG.setFlow(flow);
-        nodeG.setTask(taskJPA);
+        nodeG.setTask(testTaskJPA);
 
         NodeJPA nodeI = new NodeJPA();
         nodeI.setName("I");
         nodeI.setFlow(flow);
-        nodeI.setTask(taskJPA);
+        nodeI.setTask(testTaskJPA);
 
         nodeRepository.saveAll(Arrays.asList(
             nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG, nodeI

@@ -62,7 +62,7 @@ public class FlowRepository {
         Collection<NodeDTO> nodeDTOs = flowDTO.getNodes();
         Map<Long, NodeJPA> newNodes = nodeDTOs.stream()
             .collect(Collectors.toMap(
-                nodeDTO -> Long.valueOf(nodeDTO.getId()),
+                NodeDTO::getId,
                 nodeDTO -> {
                     NodeJPA newNode = NodeJPA.shallowCopy(nodeDTO);
                     newNode.setTask(taskRepository.getById(Long.valueOf(nodeDTO.getTaskId())));

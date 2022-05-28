@@ -1,9 +1,14 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -11,6 +16,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 public class FlowDTO {
+    @PositiveOrZero
     private Long id;
     private String name;
     private String author;
@@ -18,8 +24,10 @@ public class FlowDTO {
     private Date modificationDate;
     private Date creationDate;
 
+    @Valid
     private Collection<NodeDTO> nodes;
 
+    @Valid
     private Collection<EdgeDTO> edges;
 
     public FlowDTO(Flow flow) {

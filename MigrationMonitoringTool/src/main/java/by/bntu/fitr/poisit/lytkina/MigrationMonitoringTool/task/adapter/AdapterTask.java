@@ -8,12 +8,12 @@ import org.springframework.web.client.RestTemplate;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.MASTER_LIST_TABLE_PREFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
 
 public class AdapterTask extends AbstractTask {
     private static final String START_PATH = "/start";
     private static final String STATUS_PATH = "/status";
     private static final String STOP_PATH = "/stop";
-    public static final String URL_PARAM_ID = "3";
 
     @Override
     public void run() {

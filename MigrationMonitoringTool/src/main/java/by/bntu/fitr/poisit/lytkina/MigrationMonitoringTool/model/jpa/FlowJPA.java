@@ -61,6 +61,9 @@ public class FlowJPA {
         if (flow.getCreationDate() != null) {
             this.creationDate = flow.getCreationDate();
         }
+        if (flow.getCreationDate() != null) {
+            this.modificationDate = flow.getModificationDate();
+        }
         if (flow.getAuthor() != null) {
             this.author = flow.getAuthor();
         }
@@ -74,7 +77,7 @@ public class FlowJPA {
     }
 
     @PrePersist
-    void createdAt() {
+    void prePersis() {
         this.creationDate = new Date();
         this.modificationDate = new Date();
     }
