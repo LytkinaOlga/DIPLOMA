@@ -1,5 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeParameterDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,5 +27,13 @@ public class NodeParameterJPA {
         this.node = node;
         this.parameter = parameter;
         this.value = value;
+    }
+
+    public NodeParameterJPA(NodeParameterDTO nodeParameterDTO, Long nodeId) {
+        this.parameter = new TaskParameterJPA();
+        this.parameter.setId(Long.valueOf(nodeParameterDTO.getParamId()));
+        this.node = new NodeJPA();
+        this.node.setId(nodeId);
+        this.value = nodeParameterDTO.getValue();
     }
 }

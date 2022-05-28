@@ -8,5 +8,6 @@ public interface Constants {
         String CURRENT_EXECUTION_ID = "CURRENT_EXECUTION_ID";
         String CURRENT_FLOW_ID = "CURRENT_FLOW_ID";
         String NODE_NAME = "NODE_NAME";
+        String NODE_ID = "NODE_ID";
     }
 }
