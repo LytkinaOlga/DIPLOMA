@@ -44,3 +44,5 @@ build/
 db
 application.local.properties
 *.log
+mmt.log*
+*.db

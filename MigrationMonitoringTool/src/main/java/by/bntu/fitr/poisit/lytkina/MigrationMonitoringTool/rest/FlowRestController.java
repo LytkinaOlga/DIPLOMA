@@ -1,7 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.rest;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FlowPreviewDTO;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FullFlowDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FlowDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.FlowRepository;
@@ -34,18 +34,17 @@ public class FlowRestController {
     }
 
     @GetMapping("/flow/{id}")
-    public ResponseEntity<FullFlowDTO> getFullFlow(@PathVariable("id") long flowId) {
+    public ResponseEntity<FlowDTO> getFullFlow(@PathVariable("id") long flowId) {
         Optional<Flow> flow = flowRepository.findById(flowId);
         return flow
-            .map(f -> new ResponseEntity<>(new FullFlowDTO(f), HttpStatus.OK))
+            .map(f -> new ResponseEntity<>(new FlowDTO(f), HttpStatus.OK))
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/flow")
-    public ResponseEntity<Long> saveFullFlow(@RequestBody FullFlowDTO flowDTO) {
-        Flow flow = new Flow(flowDTO);
-        flow = flowRepository.updateFlow(flow);
-        return new ResponseEntity<>(flow.getId(), HttpStatus.OK);
+    public ResponseEntity<Long> saveFullFlow(@RequestBody FlowDTO flowDTO) {
+        Long flowId = flowRepository.updateFlow(flowDTO);
+        return new ResponseEntity<>(flowId, HttpStatus.OK);
     }
 
     @PostMapping("/flow/delete/{id}")

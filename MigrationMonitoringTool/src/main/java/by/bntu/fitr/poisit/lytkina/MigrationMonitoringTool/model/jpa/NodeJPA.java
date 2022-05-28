@@ -2,11 +2,9 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.NodeDTO;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.CollectionHelper.mapCollect;
@@ -28,7 +26,7 @@ public class NodeJPA {
     @JoinColumn(name = "flow_id")
     private FlowJPA flow;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "task_id")
     private TaskJPA task;
 
@@ -70,16 +68,11 @@ public class NodeJPA {
         );
     }
 
-    public static NodeJPA copyWithoutFlowAndEdgesAndId(NodeJPA orig) {
-        NodeJPA newNode =new NodeJPA();
+    public static NodeJPA shallowCopy(NodeDTO orig) {
+        NodeJPA newNode = new NodeJPA();
         newNode.setName(orig.getName());
-        newNode.setX(orig.getX());
-        newNode.setY(orig.getY());
-        newNode.setTask(orig.getTask());
-        newNode.parameters = mapCollect(orig.getParameters(), p -> {
-            p.setNode(newNode);
-            return p;
-        });
+        newNode.setX(orig.getPosition().getX());
+        newNode.setY(orig.getPosition().getY());
 
         return newNode;
     }

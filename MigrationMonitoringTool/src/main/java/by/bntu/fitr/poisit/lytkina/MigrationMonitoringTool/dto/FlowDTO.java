@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
-public class FullFlowDTO {
+public class FlowDTO {
     private Long id;
     private String name;
     private String author;
@@ -22,7 +22,7 @@ public class FullFlowDTO {
 
     private Collection<EdgeDTO> edges;
 
-    public FullFlowDTO(Flow flow) {
+    public FlowDTO(Flow flow) {
         this.id = flow.getId();
         this.name = flow.getName();
         this.creationDate = flow.getCreationDate();

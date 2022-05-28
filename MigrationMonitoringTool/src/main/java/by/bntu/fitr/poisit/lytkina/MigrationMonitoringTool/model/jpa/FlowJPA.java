@@ -1,5 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.FlowDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Flow;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,19 +37,19 @@ public class FlowJPA {
     @OneToMany(mappedBy = "flow")
     private Set<NodeJPA> nodes;
 
-    public static FlowJPA shallowCopy(Flow flow) {
+    public static FlowJPA shallowCopy(FlowDTO flow) {
         FlowJPA flowJPA = new FlowJPA();
         flowJPA.setId(flow.getId());
         flowJPA.setName(flow.getName());
         flowJPA.setCreationDate(flow.getCreationDate());
-        flowJPA.setModificationDate(flowJPA.getModificationDate());
-        flowJPA.setDescription(flowJPA.getDescription());
-        flowJPA.setAuthor(flowJPA.getAuthor());
+        flowJPA.setModificationDate(flow.getModificationDate());
+        flowJPA.setDescription(flow.getDescription());
+        flowJPA.setAuthor(flow.getAuthor());
 
         return flowJPA;
     }
 
-    public void shallowMerge(Flow flow) {
+    public void shallowMerge(FlowDTO flow) {
         if (!Objects.equals(this.id, flow.getId())) {
             throw new IllegalArgumentException(
                 "Can't merge flows with different ids: " + flow.getId() + " to " + this.id
