@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class FlowRestController {
     }
 
     @PostMapping("/flow")
-    public ResponseEntity<Long> saveFullFlow(@RequestBody FlowDTO flowDTO) {
+    public ResponseEntity<Long> saveFullFlow(@Valid @RequestBody FlowDTO flowDTO) {
         Long flowId = flowRepository.updateFlow(flowDTO);
         return new ResponseEntity<>(flowId, HttpStatus.OK);
     }

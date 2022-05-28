@@ -29,7 +29,7 @@ public class MigrationMonitoringToolApplication implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) throws Exception {
 //		dataGenerator.generateSimpleFlow();
-		dataGenerator.generateSimpleAdapterFlow();
+//		dataGenerator.generateSimpleAdapterFlow();
 //		Collection<FlowJPA> flowJPAS = flowJPARepository.findAll();
 //		ExecutionGraph executionGraph = graphBuilder.buildGraph(flowJPAS.iterator().next().getId());
 //		executionGraph.run();
