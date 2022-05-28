@@ -113,7 +113,33 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
         console.log(nodes);
         const node = nodes.filter(node => node.taskId === taskWithParams.taskId);
         console.log("node[0]" + node[0])
-        node[0].nodeParameters = taskWithParams.taskParams;
+
+        if (node[0].nodeParameters === undefined) {
+            node[0].nodeParameters = [];
+            node[0].nodeParameters.push(taskWithParams.taskParam)
+        }
+        else {
+            const outParamId = taskWithParams.taskParam.paramId;
+            console.log(outParamId);
+
+            let paramUpdated = false;
+            node[0].nodeParameters.forEach((nodeParam) => {
+                console.log(nodeParam.paramId + ", " + outParamId + ", " + taskWithParams.taskParam.paramValue);
+                if (nodeParam.paramId == outParamId) {
+                    nodeParam.paramValue = taskWithParams.taskParam.paramValue;
+                    paramUpdated = true;
+                }
+            })
+            if (paramUpdated === false)
+            {
+                node[0].nodeParameters.push(taskWithParams.taskParam);
+            }            
+        }
+        node[0].nodeParameters.forEach((nodeParam) => {
+            const node = selectedTaskParameters.filter(selectedTaskPram => selectedTaskPram.id === nodeParam.paramId);
+            node[0].value = nodeParam.paramValue;
+        })
+        console.log(selectedTaskParameters);
         console.log(node[0]);
         setNodes(nodes);
     }
@@ -130,18 +156,23 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
     const onNodeClick = (event, node) => {
         setIsTaskSelected(true);
         console.log(node);
+        console.log(nodes);
         const taskId = node.taskId;
         const task = tasks.filter(task => task.id === taskId);
         console.log(task);
-        const selectedTaskParams = task[0].parameters;
+        const selectedTaskParams = JSON.parse(JSON.stringify(task[0].parameters));
         const selectedTaskNameValue = task[0].name;
         const selectedTaskIdValue = task[0].id;
         console.log(selectedTaskParams);
 
-        node.parameters.forEach((param) => {
-            const selectedTaskParam = selectedTaskParams.filter(taskParam => param.paramId === taskParam.id);
-            selectedTaskParam[0].value = param.value
-        });
+        if (node.nodeParameters != undefined) {
+            console.log(selectedTaskParams);
+            node.nodeParameters.forEach((param) => {
+                const selectedTaskParam = selectedTaskParams.filter(taskParam => param.paramId === taskParam.id);
+                selectedTaskParam[0].value = param.paramValue
+                console.log(selectedTaskParams);
+            });
+        }
 
         setSelectedTaskParameters(selectedTaskParams);
         setSelectedTaskName(selectedTaskNameValue);
@@ -183,16 +214,16 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
                 </div>
                 <LeftPanel tasks={tasks} />
                 {
-                    (isTaskSelected) ? <TaskParametersPanel 
-                                            taskId={selectedTaskId}
-                                            taskName={selectedTaskName} 
-                                            taskParams={selectedTaskParameters} 
-                                            fillTastParameters={fillTastParameters}
-                                            /> :
+                    (isTaskSelected) ? <TaskParametersPanel
+                        taskId={selectedTaskId}
+                        taskName={selectedTaskName}
+                        taskParams={selectedTaskParameters}
+                        fillTastParameters={fillTastParameters}
+                    /> :
                         <FlowParametersPanel
                             defaultFlowName={flowName}
                             changeFlowName={changeFlowName}
-                            defaultFlowDescription = {flowDescription}
+                            defaultFlowDescription={flowDescription}
                             changeFlowDescription={changeFlowDescription}
                         />
                 }
