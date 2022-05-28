@@ -15,7 +15,7 @@ class FlowService {
         return axios.get(UPL_GET_FLOW_BY_ID + id)
     }
 
-    addFlow(id, name, nodes, edges) {
+    addFlow(id, name, description, nodes, edges) {
         if (id === null) {
             id = 0;
         }
@@ -27,6 +27,7 @@ class FlowService {
         const flow = {
             id: id,
             name: name,
+            description: description,
             nodes: nodes,
             edges: edges
         };
