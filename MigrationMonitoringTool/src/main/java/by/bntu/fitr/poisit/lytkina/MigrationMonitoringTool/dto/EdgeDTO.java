@@ -11,9 +11,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Data
 @NoArgsConstructor
 public class EdgeDTO {
-    @PositiveOrZero
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
+    private String id; // can be auto-generated as string by frontend
 
     @PositiveOrZero
     @JsonSerialize(using = ToStringSerializer.class)
@@ -24,7 +22,7 @@ public class EdgeDTO {
     private Long target;
 
     public EdgeDTO(EdgeJPA edgeJPA) {
-        this.id = edgeJPA.getId();
+        this.id = edgeJPA.getId().toString();
         this.source = edgeJPA.getNodeFrom();
         this.target = edgeJPA.getNodeTo();
     }

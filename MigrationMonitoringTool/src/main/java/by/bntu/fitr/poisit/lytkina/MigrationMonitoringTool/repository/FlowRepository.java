@@ -68,7 +68,7 @@ public class FlowRepository {
                     newNode.setTask(taskRepository.getById(Long.valueOf(nodeDTO.getTaskId())));
 
                     newNode.setParameters(mapCollect(nodeDTO.getNodeParametersDTO(), p -> {
-                        TaskParameterJPA taskParam = taskParameterRepository.getById(Long.valueOf(p.getParamId()));
+                        TaskParameterJPA taskParam = taskParameterRepository.getById(Long.valueOf(p.getId()));
                         NodeParameterJPA nodeParam = new NodeParameterJPA();
                         nodeParam.setParameter(taskParam);
                         nodeParam.setValue(p.getValue());
