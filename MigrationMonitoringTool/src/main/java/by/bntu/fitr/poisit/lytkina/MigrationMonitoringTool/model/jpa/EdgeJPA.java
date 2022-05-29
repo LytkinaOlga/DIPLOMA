@@ -26,8 +26,8 @@ public class EdgeJPA {
     private Long nodeTo;
 
     public EdgeJPA(EdgeDTO edgeDTO) {
-        this.nodeFrom = Long.valueOf(edgeDTO.getSource());
-        this.nodeTo = Long.valueOf(edgeDTO.getTarget());
+        this.nodeFrom = edgeDTO.getSource();
+        this.nodeTo = edgeDTO.getTarget();
     }
 
     @Override

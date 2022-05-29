@@ -36,7 +36,7 @@ public class NodeParameterJPA {
 
     public NodeParameterJPA(NodeParameterDTO nodeParameterDTO, Long nodeId) {
         this.parameter = new TaskParameterJPA();
-        this.parameter.setId(Long.valueOf(nodeParameterDTO.getParamId()));
+        this.parameter.setId(Long.valueOf(nodeParameterDTO.getId()));
         this.node = new NodeJPA();
         this.node.setId(nodeId);
         this.value = nodeParameterDTO.getValue();

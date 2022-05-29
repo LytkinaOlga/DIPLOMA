@@ -50,4 +50,6 @@ public class NodeDTO {
         }
         return nodeParametersDTO;
     }
+
+
 }
