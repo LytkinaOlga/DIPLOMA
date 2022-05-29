@@ -15,6 +15,5 @@ public class MasterListCreationTask extends AbstractTask {
         String entityIdColumn = taskParameters.get(Constants.ParamNames.NODE_PARAM_PREFIX + ENTITY_COLUMN_PARAM_ID);
         MasterListDAO dao = SpringContext.getBean(MasterListDAO.class);
         dao.createMasterListTable(Long.valueOf(executionId), entityTable, entityIdColumn);
-        throw new RuntimeException("master list creation failed");
     }
 }
