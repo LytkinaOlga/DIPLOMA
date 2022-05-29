@@ -28,7 +28,7 @@ public class MasterListOracleDAO implements MasterListDAO {
             "insert into " + mlTableName + " (entity_id) \n"
                 + "select " + entityIdColumn + " from " + entitiesTableName
         );
-        jdbcTemplate.execute("COMMIT;");
+        jdbcTemplate.execute("COMMIT");
         logger.debug("Created master list table '{}' with {} rows", mlTableName, count);
     }
 
