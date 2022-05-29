@@ -10,15 +10,15 @@ const drawerWidth = 240;
 export default function TaskParametersPanel({ taskId, taskName, taskParams, fillTastParameters }) {
 
     console.log(taskParams);
-    console.log(taskParams[0].value);
+    
     const handleInput = (event) => {
         const id = event.target.name;
         const paramValue = event.target.value;
         const taskWithParams = {
             taskId: taskId,
             taskParam: {
-                paramId: id,
-                paramValue: paramValue
+                id: id,
+                value: paramValue
             }
         }
         console.log(taskWithParams)

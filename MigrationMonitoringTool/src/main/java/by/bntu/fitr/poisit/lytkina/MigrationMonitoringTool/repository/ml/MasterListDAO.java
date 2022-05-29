@@ -1,5 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml;
 
+
 public interface MasterListDAO {
     String ML_TABLE_PREFIX = "ML_";
 
