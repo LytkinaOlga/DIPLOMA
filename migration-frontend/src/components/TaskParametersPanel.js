@@ -3,19 +3,21 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { getFirstNonSpannedColumnToRender } from '@mui/x-data-grid/hooks/features/columns/gridColumnsUtils';
 import * as React from 'react';
 
 const drawerWidth = 240;
 
-export default function TaskParametersPanel({ taskId, taskName, taskParams, fillTastParameters }) {
+export default function TaskParametersPanel({ taskId, taskName, taskParams, node, fillTastParameters }) {
 
     console.log(taskParams);
-    
+    console.log(node);
+
     const handleInput = (event) => {
         const id = event.target.name;
         const paramValue = event.target.value;
         const taskWithParams = {
-            taskId: taskId,
+            nodeId: node.id,
             taskParam: {
                 id: id,
                 value: paramValue
