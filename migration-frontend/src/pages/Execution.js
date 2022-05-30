@@ -81,6 +81,7 @@ export default function Execution() {
             <ExecutionRenderer
                 flowNodes={flow.nodes}
                 flowEdges={flow.edges}
+                execution={execution}
             />
         </>
     )

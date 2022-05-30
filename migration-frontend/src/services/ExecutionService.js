@@ -13,6 +13,10 @@ class ExecutionService {
         return axios.get(URL_GET_EXECUTIONS);
     }
 
+    completeManualTask(executionId, nodeId) {
+        return axios.post("http://localhost:8090/execution/" + executionId + "/complete/" + nodeId);
+    }
+
 }
 
 export default new ExecutionService()

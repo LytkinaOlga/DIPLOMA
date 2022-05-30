@@ -2,12 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
     addEdge, Background, Controls, ReactFlowProvider, useEdgesState, useNodesState
 } from 'react-flow-renderer';
+import ExecutionPanel from './ExecutionPanel';
+import ExecutionTaskPanel from './ExecutionTaskPanel';
 
 let id = 0;
 const getId = () => `${id++}`;
 const height = window.innerHeight;
 
-export default function ExecutionRenderer({ flowNodes, flowEdges }) {
+export default function ExecutionRenderer({ flowNodes, flowEdges, execution }) {
 
     const myNodes = [
         {
@@ -35,23 +37,33 @@ export default function ExecutionRenderer({ flowNodes, flowEdges }) {
     const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
+    const [isTaskSelected, setIsTaskSelected] = useState(false);
+    const [selectedNode, setSelectedNode] = useState();
+    const [selectedExecutionNode, setSelectedExecutionNode] = useState();
 
     useEffect(() => {
         flowNodes != undefined ? setNodes(flowNodes) : setNodes([]);
         flowEdges != undefined ? setEdges(flowEdges) : setEdges([]);
     }, [flowNodes, flowEdges])
 
-
-    
-
     const onNodeClick = (event, node) => {
         console.log("click node " + node);
+        console.log(node);
+
+        execution.nodes.forEach((element) => {
+            if (element.nodeId === node.id) {
+                setSelectedExecutionNode(element);
+            }
+        })
+
+        setIsTaskSelected(true);
+        setSelectedNode(node);
     };
 
     const onPaneClick = () => {
         console.log("click pane ");
+        setIsTaskSelected(false);
     }
-
 
     return (
         <div >
@@ -68,11 +80,16 @@ export default function ExecutionRenderer({ flowNodes, flowEdges }) {
                         onPaneClick={onPaneClick}
                         fitView
                     >
-                        <Controls />
                         <Background />
                     </ReactFlow>
                 </div>
-                
+                {
+                    (isTaskSelected) ? <ExecutionTaskPanel
+                        flowNode={selectedNode}
+                        executedNode={selectedExecutionNode}
+                        execution={execution}
+                    /> : <ExecutionPanel execution={execution} />
+                }
             </ReactFlowProvider>
         </div >
     );
