@@ -51,6 +51,7 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
     const [selectedTaskId, setSelectedTaskId] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
     const [taskParametersWithValue, setTaskParametersWithValue] = useState({});
+    const [selectedNodeName, setSelectedNodeName] = useState("");
 
     useEffect(() => {
         flowNodes != undefined ? setNodes(flowNodes) : setNodes([]);
@@ -175,6 +176,7 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
             });
         }
         setSelectedNode(node);
+        setSelectedNodeName(node.data.label);
         setSelectedTaskParameters(selectedTaskParams);
         setSelectedTaskName(selectedTaskNameValue);
         setSelectedTaskId(selectedTaskIdValue);
@@ -190,6 +192,18 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
             const executionId = res.data;
             window.location.href = '/execution/' + executionId;
         })
+    }
+
+    const fillNodeName = (nodeName, nodeId) => {
+        console.log(nodes);
+        const node = nodes.filter(node => node.id === nodeId);
+        
+        node[0].data = {
+            label : nodeName
+        }
+        console.log(node[0]);
+        setNodes(nodes);
+        setSelectedNodeName(nodeName)
     }
 
     return (
@@ -221,6 +235,8 @@ export default function FlowRenderer({ initFlowId, initFlowName, flowNodes, flow
                         taskParams={selectedTaskParameters}
                         node={selectedNode}
                         fillTastParameters={fillTastParameters}
+                        fillNodeName={fillNodeName}
+                        selectedNodeName={selectedNodeName}
                     /> :
                         <FlowParametersPanel
                             defaultFlowName={flowName}

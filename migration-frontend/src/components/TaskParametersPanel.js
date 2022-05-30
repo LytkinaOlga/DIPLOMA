@@ -8,10 +8,10 @@ import * as React from 'react';
 
 const drawerWidth = 240;
 
-export default function TaskParametersPanel({ taskId, taskName, taskParams, node, fillTastParameters }) {
+export default function TaskParametersPanel({ taskId, taskName, taskParams, node, fillTastParameters, fillNodeName, selectedNodeName }) {
 
     console.log(taskParams);
-    console.log(node);
+    console.log(node.data.label);
 
     const handleInput = (event) => {
         const id = event.target.name;
@@ -25,6 +25,12 @@ export default function TaskParametersPanel({ taskId, taskName, taskParams, node
         }
         console.log(taskWithParams)
         fillTastParameters(taskWithParams);
+    }
+
+    const handleInputNodeName = (event) => {
+        console.log(event.target.value);
+        const nodeName = event.target.value;
+        fillNodeName(nodeName, node.id);
     }
 
     return (
@@ -42,6 +48,14 @@ export default function TaskParametersPanel({ taskId, taskName, taskParams, node
                 <Typography sx={{ mt: 3, ml: 3, mb: 3 }}>TASK PARAMETERS</Typography>
                 <Divider />
                 <Typography sx={{ mt: 3, ml: 3, mb: 3 }} >Task Name: {taskName}</Typography>
+                <TextField
+                            variant="outlined"
+                            sx={{ ml: 2, mt: 3, mr: 2 }}
+                            label="Node Name" 
+                            name="Node Name"
+                            value={selectedNodeName}
+                            onChange={handleInputNodeName}
+                            />
                 {
                     taskParams.map((param) => (
                         <TextField
