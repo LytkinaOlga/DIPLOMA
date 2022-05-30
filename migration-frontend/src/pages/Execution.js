@@ -4,6 +4,7 @@ import ExecutionRenderer from '../components/ExecutionRenderer';
 import FlowRenderer from '../components/FlowRenderer';
 import ExecutionService from '../services/ExecutionService';
 import FlowService from '../services/FlowService';
+  
 
 export default function Execution() {
     const executionId = useParams().executionId;
@@ -30,7 +31,12 @@ export default function Execution() {
                 execution.data.nodes.forEach((node, id) => {
                     const changedNode = res.data.nodes.filter(flowNode => flowNode.id == node.nodeId);
                     changedNode[0].status = node.status;
-
+                    console.log("Yes");
+                    // if (node.nodeName === "Manual Task" && node.status === "RUNNING")
+                    // {
+                    //     console.log("Yes");
+                    //     changedNode[0].type = 'manualTask'
+                    // }
                     if (node.status === "RUNNING") {
                         changedNode[0].style = {
                             borderColor: '#FFEA2C',

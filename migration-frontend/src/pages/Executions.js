@@ -14,28 +14,50 @@ export default function Executions() {
     const [completedExecutions, setCompletedExecutions] = React.useState([]);
     const [upcomingExecutions, setUpcomingExecutions] = React.useState([]);
 
-
-
     React.useEffect(() => {
         ExecutionService.getExecutions().then((res) => {
             setExecutions(res.data);
             console.log(res.data);
             res.data.forEach((execution, id ) => {
-                console.log(execution.status);
+                let executionExists = false;
                 if (execution.status === STATUS_RUNNINIG)
                 {
-                    runningExecutions.push(execution);
+                    runningExecutions.forEach((element) => {
+                        if (element.id === execution.id){
+                            executionExists = true;
+                        }
+                    })
+                    if (!executionExists)
+                    {
+                        runningExecutions.push(execution);
+                    }                    
                 };
                 if (execution.status === STATUS_UPCOMING)
                 {
-                    upcomingExecutions.push(execution);
+                    upcomingExecutions.forEach((element) => {
+                        if (element.id === execution.id){
+                            executionExists = true;
+                        }
+                    })
+                    if (!executionExists)
+                    {
+                        upcomingExecutions.push(execution);
+                    }   
                 };
                 if (execution.status === STATUS_SUCCEEDED || execution.status === STATUS_FAILED)
                 {
-                    completedExecutions.push(execution);
+                    completedExecutions.forEach((element) => {
+                        if (element.id === execution.id){
+                            executionExists = true;
+                        }
+                    })
+                    if (!executionExists)
+                    {
+                        completedExecutions.push(execution);
+                    }
                 };
             })
-            console.log(runningExecutions);
+            console.log(completedExecutions);
             setRunningExecutions(runningExecutions);
             setCompletedExecutions(completedExecutions);
             setUpcomingExecutions(upcomingExecutions);
