@@ -16,6 +16,7 @@ import Flow from './pages/Flow';
 import TempFlow from './components/TempFlow';
 import TestFlow from './components/TestFlow';
 import Execution from './pages/Execution';
+import Statistics from './pages/Statistics';
 
 const theme = createTheme({
   palette: {
@@ -39,6 +40,7 @@ class Dashboard extends Component {
               <Route exact path="/flow/:id" element={<TempFlow />} />
               <Route exact path="/execution/:executionId" element={<Execution />} />
               <Route exact path="/test" element={<TestFlow />} />
+              <Route exact path="/statistics/:executionId" element={<Statistics />} />
             </Routes>
           </ThemeProvider>
         </BrowserRouter>
