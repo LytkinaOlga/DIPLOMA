@@ -9,6 +9,7 @@ public interface Constants {
         String CURRENT_FLOW_ID = "CURRENT_FLOW_ID";
         String NODE_NAME = "NODE_NAME";
         String NODE_ID = "NODE_ID";
+        String RESULT_PREFIX = "RESULT_";
     }
 
     interface Tasks {
@@ -29,6 +30,7 @@ public interface Constants {
         interface Adapter {
             Long ID = 5L;
             Long URL_PARAM_ID = 3L;
+            String SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX = "SUCCESSFULLY_PROCESSED_ENTITIES";
 
         }
         interface RandomFailingAdapter {

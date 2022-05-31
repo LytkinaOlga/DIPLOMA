@@ -52,6 +52,7 @@ public class ExecutionRepository {
             executionNode.setStatus(executionProgress.getStatus());
             executionNode.setStartDate(executionProgress.getStartDate());
             executionNode.setEndDate(executionProgress.getEndDate());
+            executionNode.setSuccessfullyProcessedEntities(executionProgress.getSuccessfullyProcessedEntities());
             return executionNode;
         }).collect(Collectors.toList());
 

@@ -18,6 +18,7 @@ public class ExecutionNode {
     private ExecutionStatus status;
     private Date startDate;
     private Date endDate;
+    private int successfullyProcessedEntities;
 
     public ExecutionNode(ExecutionNodeJPA executionNodeJPA) {
         this.nodeId = executionNodeJPA.getNode().getId();
@@ -26,5 +27,6 @@ public class ExecutionNode {
         this.startDate = executionNodeJPA.getStartDate();
         this.endDate = executionNodeJPA.getEndDate();
         this.nodeName = executionNodeJPA.getNode().getName();
+        this.successfullyProcessedEntities = executionNodeJPA.getSuccessfullyProcessedEntities();
     }
 }

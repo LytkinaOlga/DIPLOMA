@@ -177,7 +177,7 @@ public class DataGenerator {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void generateSimpleAdapterFlow() {
+    public void generateMLFakeAdapterFlow() {
         FlowJPA flow = new FlowJPA();
         flow.setId(1L);
         flow.setName("simpleFlow");
@@ -197,12 +197,12 @@ public class DataGenerator {
         node1.setY(100.1);
         node1.setTask(masterListTask);
         node1.setParameters(Arrays.asList(
-            new NodeParameterJPA(node1, entityTableParam, "migr_test"),
+            new NodeParameterJPA(node1, entityTableParam, "customers"),
             new NodeParameterJPA(node1, entityIdColumnParam, "id")
         ));
 
         NodeJPA node2 = new NodeJPA();
-        node2.setName("Random Failing Adapter");
+        node2.setName("Random Failing Adapter 0.2");
         node2.setFlow(flow);
         node2.setX(200.2);
         node2.setY(200.2);
@@ -212,22 +212,29 @@ public class DataGenerator {
         ));
 
         NodeJPA node3 = new NodeJPA();
-        node3.setName("Random Failing Adapter");
+        node3.setName("Random Failing Adapter 0.6");
         node3.setFlow(flow);
         node3.setX(200.2);
         node3.setY(200.2);
         node3.setTask(randomFailingAdapterTask);
         node3.setParameters(Arrays.asList(
-            new NodeParameterJPA(node2, successRateParam, "0.5")
+            new NodeParameterJPA(node3, successRateParam, "0.5")
         ));
 
         node1 = nodeRepository.save(node1);
         node2 = nodeRepository.save(node2);
+        node3 = nodeRepository.save(node3);
 
         EdgeJPA edge1 = new EdgeJPA();
         edge1.setNodeFrom(node1.getId());
         edge1.setNodeTo(node2.getId());
+
+        EdgeJPA edge2 = new EdgeJPA();
+        edge2.setNodeFrom(node1.getId());
+        edge2.setNodeTo(node3.getId());
+
         edgeRepository.save(edge1);
+        edgeRepository.save(edge2);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

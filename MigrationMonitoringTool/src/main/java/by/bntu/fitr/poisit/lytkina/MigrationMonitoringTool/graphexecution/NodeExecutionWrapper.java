@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames.NODE_PARAM_PREFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
 
 @NoArgsConstructor
@@ -49,7 +51,7 @@ public class NodeExecutionWrapper implements Runnable {
             task.run();
         } catch (Exception e) {
             logger.debug("Node execution failed, node: " + nodeId);
-            paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.FAILED, null, new Date());
+            paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.FAILED, null, new Date(), -1);
             throw new RuntimeException(
                 "Node execution failed, node: " + nodeId
                     + ". \nOriginal message: " + e.getMessage(),
@@ -99,8 +101,6 @@ public class NodeExecutionWrapper implements Runnable {
         taskParameters.put(Constants.ParamNames.CURRENT_EXECUTION_ID, executionId.toString());
         taskParameters.put(Constants.ParamNames.NODE_NAME, nodeJPA.getName());
         taskParameters.put(Constants.ParamNames.NODE_ID, nodeJPA.getId().toString());
-        // todo: remove
-        taskParameters.put(Constants.ParamNames.NODE_PARAM_PREFIX + URL_PARAM_ID, "http://localhost:8081");
 
         nodeJPA.getParameters().forEach(parameterJPA -> {
             taskParameters.put(
@@ -117,12 +117,18 @@ public class NodeExecutionWrapper implements Runnable {
     }
 
     private void preExecute() {
-        paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.RUNNING, new Date(), null);
+        paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.RUNNING, new Date(), null, null);
         logger.debug("Started to execute task " + task.getName() + " of node " + nodeId);
     }
 
     private void postExecute() {
-        paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.SUCCEEDED, null, new Date());
+        int processedEntities = -1;
+        String processedEntitiesString =
+            taskParameters.get(Constants.ParamNames.RESULT_PREFIX + SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX);
+        if (StringUtils.hasText(processedEntitiesString)) {
+            processedEntities = Integer.parseInt(processedEntitiesString);
+        }
+        paramUpdater.updateExecutionNode(executionId, nodeId, ExecutionStatus.SUCCEEDED, null, new Date(), processedEntities);
         logger.debug("Finished execution of task " + task.getName() + " of node " + nodeId);
     }
 
