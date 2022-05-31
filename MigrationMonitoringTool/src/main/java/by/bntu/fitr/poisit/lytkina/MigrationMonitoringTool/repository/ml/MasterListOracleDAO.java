@@ -70,7 +70,7 @@ public class MasterListOracleDAO implements MasterListDAO {
                 "USING (SELECT entity_id, status, error_message FROM " + mlAdapterTableName + " where status = 'FAILED') y\n" +
                 "ON (x.entity_id  = y.entity_id)\n" +
                 "WHEN MATCHED THEN UPDATE SET x.status = case x.status when 'OK' then y.status else x.status end\n" +
-                ", x.error_message = case x.error_message when null then y.error_message else x.error_message || y.error_message"
+                ", x.error_message = case x.error_message when null then y.error_message else x.error_message || y.error_message end"
         );
         logger.debug("Merged {} rows from adapter master list table '{}'", count, mlAdapterTableName);
 
