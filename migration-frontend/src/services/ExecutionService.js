@@ -17,6 +17,10 @@ class ExecutionService {
         return axios.post("http://localhost:8090/execution/" + executionId + "/complete/" + nodeId);
     }
 
+    getMasterList(executionId) {
+        return axios.get(UPL_GET_EXECUTION_BY_ID + executionId + "/masterlist");
+    }
+
 }
 
 export default new ExecutionService()
