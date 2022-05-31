@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExecutionGraph {
     private static final Map<Long, ExecutionGraph> createdExecutions = new HashMap<>();
@@ -94,7 +96,7 @@ public class ExecutionGraph {
                     :
                     CompletableFuture.allOf(
                         nodeDependencies.toArray(new CompletableFuture[] {})
-                    ).thenRun(executionWrapper);
+                    ).thenRunAsync(executionWrapper);
 
                 nodeFutures.put(currentNode, nodeFuture);
                 nodeExecutions.put(currentNode.getNodeId(), executionWrapper);

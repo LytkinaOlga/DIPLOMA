@@ -1,6 +1,9 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.config.SpringContext;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.AbstractTask;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.MASTER_LIST_TABLE_PREFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
 
 public class AdapterTask extends AbstractTask {
@@ -21,8 +25,13 @@ public class AdapterTask extends AbstractTask {
 
         String executionId = taskParameters.get(ParamNames.CURRENT_EXECUTION_ID);
         String nodeName = taskParameters.get(ParamNames.NODE_NAME);
+        String nodeId = taskParameters.get(ParamNames.NODE_ID);
         String masterListTable = MASTER_LIST_TABLE_PREFIX + executionId;
         String startAdapterURL = taskParameters.get(ParamNames.NODE_PARAM_PREFIX + URL_PARAM_ID) + START_PATH;
+
+
+        MasterListDAO dao = SpringContext.getBean(MasterListDAO.class);
+        dao.cloneMasterListForAdapter(Long.valueOf(executionId), Long.valueOf(nodeId));
 
         logger.debug("Node {} is sending start to {} masterListTable: {}",
             nodeName, startAdapterURL, masterListTable
@@ -34,6 +43,15 @@ public class AdapterTask extends AbstractTask {
         ).getBody();
 
         waitTillFinished();
+
+        int successfullyProcessedEntities =
+            dao.mergeMasterListFromAdapter(Long.valueOf(executionId), Long.valueOf(nodeId));
+        logger.debug("Merged {} SUCCEEDED rows", successfullyProcessedEntities);
+
+        taskParameters.put(
+            Constants.ParamNames.RESULT_PREFIX + SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX,
+            String.valueOf(successfullyProcessedEntities)
+        );
 
         logger.debug("Node {} adapter work finished", nodeName);
     }

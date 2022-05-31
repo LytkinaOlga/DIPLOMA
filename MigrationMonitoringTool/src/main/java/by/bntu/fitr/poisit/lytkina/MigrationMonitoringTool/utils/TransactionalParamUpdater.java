@@ -22,7 +22,7 @@ public class TransactionalParamUpdater {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateExecutionNode(Long executionId, Long nodeId,
-                                       ExecutionStatus status, Date startDate, Date endDate) {
+                                       ExecutionStatus status, Date startDate, Date endDate, Integer successfullyProcessedEntities) {
         ExecutionNodeJPA executionNode = executionNodeJPARepository.findById(
             new ExecutionProgressJPAPK(executionId, nodeId)
         ).orElseThrow(
@@ -36,6 +36,9 @@ public class TransactionalParamUpdater {
         }
         if (endDate != null) {
             executionNode.setEndDate(endDate);
+        }
+        if (successfullyProcessedEntities != null) {
+            executionNode.setSuccessfullyProcessedEntities(successfullyProcessedEntities);
         }
         executionNodeJPARepository.saveAndFlush(executionNode);
     }

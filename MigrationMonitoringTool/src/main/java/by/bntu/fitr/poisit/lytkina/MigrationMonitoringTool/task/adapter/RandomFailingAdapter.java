@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO.ML_TABLE_PREFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.RandomFailingAdapter.SUCCESS_RATE_PARAM_ID;
 
 public class RandomFailingAdapter extends AbstractTask {
@@ -37,7 +38,7 @@ public class RandomFailingAdapter extends AbstractTask {
                         "USING (\n" +
                         "    SELECT entity_id, status, case when (status = 'FAILED') \n"
                         + "then 'Failed by random failing adapter ''" + nodeName + "'' (" + nodeId + ")' else null end error_message FROM (\n" +
-                        "        select entity_id, case when (dbms_random.value > 0.5) then 'FAILED' else 'SUCCEED' end status\n" +
+                        "        select entity_id, case when (dbms_random.value > 0.5) then 'FAILED' else 'OK' end status\n" +
                         "        from " + adapterTableName + "\n" +
                         "    )\n" +
                         ") y\n" +
@@ -49,7 +50,7 @@ public class RandomFailingAdapter extends AbstractTask {
                     "insert into " + adapterTableName + "\n" +
                         "select entity_id, status, case when status = 'FAILED' " +
                         "then 'Failed by random failing adapter ''" + nodeName + "'' (" + nodeId + ")' else null end error_message\n" +
-                        "from (select entity_id, case when (random() > " + successRate + ") then 'FAILED' else 'SUCCEED' end status\n" +
+                        "from (select entity_id, case when (random() > " + successRate + ") then 'FAILED' else 'OK' end status\n" +
                         "      from " + adapterTableName + ") f\n" +
                         "on conflict (entity_id) do update set status = excluded.status, error_message = excluded.error_message"
                 );
@@ -60,7 +61,14 @@ public class RandomFailingAdapter extends AbstractTask {
 
             logger.debug("Updated {} rows in adapter table {}", count, adapterTableName);
 
-            dao.mergeMasterListFromAdapter(Long.valueOf(executionId), Long.valueOf(nodeId));
+            int successfullyProcessedEntities =
+                dao.mergeMasterListFromAdapter(Long.valueOf(executionId), Long.valueOf(nodeId));
+            logger.debug("Merged {} SUCCEEDED rows", successfullyProcessedEntities);
+
+            taskParameters.put(
+                Constants.ParamNames.RESULT_PREFIX + SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX,
+                String.valueOf(successfullyProcessedEntities)
+            );
         } catch (Exception e ) {
             logger.error("Failed", e);
             throw new RuntimeException(e);

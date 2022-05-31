@@ -33,6 +33,8 @@ public class ExecutionNodeJPA {
     @Column(name = "status")
     private ExecutionStatus status;
 
+    private int successfullyProcessedEntities;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

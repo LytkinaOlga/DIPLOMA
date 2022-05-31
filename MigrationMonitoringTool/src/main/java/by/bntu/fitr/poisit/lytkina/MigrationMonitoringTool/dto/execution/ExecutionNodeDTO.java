@@ -3,6 +3,7 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.ExecutionNode;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -24,6 +25,8 @@ public class ExecutionNodeDTO {
     private ExecutionStatus status;
     private Date startDate;
     private Date endDate;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer successfullyProcessedEntities;
 
     public ExecutionNodeDTO(ExecutionNode executionNode) {
         this.nodeId = executionNode.getNodeId();
@@ -32,5 +35,11 @@ public class ExecutionNodeDTO {
         this.status = executionNode.getStatus();
         this.startDate = executionNode.getStartDate();
         this.endDate = executionNode.getEndDate();
+        
+        if (executionNode.getSuccessfullyProcessedEntities() >= 0) {
+            this.successfullyProcessedEntities = executionNode.getSuccessfullyProcessedEntities();
+        } else {
+            successfullyProcessedEntities = null;
+        }
     }
 }

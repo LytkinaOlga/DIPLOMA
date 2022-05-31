@@ -14,7 +14,7 @@ public class MasterListOracleDAO implements MasterListDAO {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public void createMasterListTable(Long executionId, String entitiesTableName, String entityIdColumn) {
+    public int createMasterListTable(Long executionId, String entitiesTableName, String entityIdColumn) {
         String mlTableName = ML_TABLE_PREFIX + executionId;
         logger.trace("Creating master list table '{}'", mlTableName);
 
@@ -25,11 +25,12 @@ public class MasterListOracleDAO implements MasterListDAO {
         );
         logger.trace("Created master list table '{}'", mlTableName);
         int count = jdbcTemplate.update(
-            "insert into " + mlTableName + " (entity_id) \n"
-                + "select " + entityIdColumn + " from " + entitiesTableName
+            "insert into " + mlTableName + " (entity_id, status) \n"
+                + "select " + entityIdColumn + ", 'OK' from " + entitiesTableName
         );
         jdbcTemplate.execute("COMMIT");
         logger.debug("Created master list table '{}' with {} rows", mlTableName, count);
+        return count;
     }
 
     @Override
@@ -60,20 +61,28 @@ public class MasterListOracleDAO implements MasterListDAO {
 
     }
 
-    public void mergeMasterListFromAdapter(Long executionId, Long nodeId)  {
+    public int mergeMasterListFromAdapter(Long executionId, Long nodeId)  {
         String mlAdapterTableName = ML_TABLE_PREFIX + executionId + "_" + nodeId;
         String mlTableName = ML_TABLE_PREFIX + executionId;
 
         int count = jdbcTemplate.update(
-            "MERGE INTO " + mlTableName + " x\n"
-                + "USING (SELECT entity_id, status, error_message FROM " + mlAdapterTableName + ") y\n"
-                + "ON (x.entity_id  = y.entity_id)\n"
-                + "WHEN MATCHED THEN UPDATE SET x.status = y.status, x.error_message = y.error_message"
+            "MERGE INTO " + mlTableName + " x\n" +
+                "USING (SELECT entity_id, status, error_message FROM " + mlAdapterTableName + " where status = 'FAILED') y\n" +
+                "ON (x.entity_id  = y.entity_id)\n" +
+                "WHEN MATCHED THEN UPDATE SET x.status = case x.status when 'OK' then y.status else x.status end\n" +
+                ", x.error_message = case x.error_message when null then y.error_message else x.error_message || y.error_message"
         );
         logger.debug("Merged {} rows from adapter master list table '{}'", count, mlAdapterTableName);
 
+        count = jdbcTemplate.queryForObject(
+            "select count(1) from " + mlAdapterTableName + " x\n"
+                + "where status = 'OK'", Integer.class
+        );
+        logger.debug("Succeeded entities count: {}", count);
+
         jdbcTemplate.execute("drop table " + mlAdapterTableName);
         logger.debug("Dropped adapter master list table '{}' ", mlAdapterTableName);
+        return count;
     }
 }
 

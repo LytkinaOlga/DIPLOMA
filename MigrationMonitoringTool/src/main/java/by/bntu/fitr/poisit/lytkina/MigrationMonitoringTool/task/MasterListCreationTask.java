@@ -4,6 +4,7 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.config.SpringContext;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_COLUMN_PARAM_ID;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_TABLE_PARAM_ID;
 
@@ -14,6 +15,12 @@ public class MasterListCreationTask extends AbstractTask {
         String entityTable = taskParameters.get(Constants.ParamNames.NODE_PARAM_PREFIX + ENTITY_TABLE_PARAM_ID);
         String entityIdColumn = taskParameters.get(Constants.ParamNames.NODE_PARAM_PREFIX + ENTITY_COLUMN_PARAM_ID);
         MasterListDAO dao = SpringContext.getBean(MasterListDAO.class);
-        dao.createMasterListTable(Long.valueOf(executionId), entityTable, entityIdColumn);
+
+        int entitiesCount = dao.createMasterListTable(Long.valueOf(executionId), entityTable, entityIdColumn);
+
+        taskParameters.put(
+            Constants.ParamNames.RESULT_PREFIX + SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX,
+            String.valueOf(entitiesCount)
+        );
     }
 }

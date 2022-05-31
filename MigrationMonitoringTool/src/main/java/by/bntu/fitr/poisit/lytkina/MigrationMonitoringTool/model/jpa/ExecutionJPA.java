@@ -32,5 +32,6 @@ public class ExecutionJPA {
 
     private String startedBy;
 
+    @Column(length = 4000)
     private String errorMessage;
 }
