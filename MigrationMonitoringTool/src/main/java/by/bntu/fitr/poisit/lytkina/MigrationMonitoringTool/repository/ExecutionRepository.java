@@ -1,5 +1,6 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionMasterListDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionStatus;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.Execution;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.ExecutionNode;
@@ -10,7 +11,9 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.FlowJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionNodeJPARepository;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -31,6 +34,9 @@ public class ExecutionRepository {
 
     @Autowired
     ExecutionNodeJPARepository executionNodeJPARepository;
+
+    @Autowired
+    MasterListDAO masterListDAO;
 
     public Optional<Execution> findById(Long executionId) {
         Optional<ExecutionJPA> executionJPAOptional = executionJPARepository.findById(executionId);
@@ -69,6 +75,9 @@ public class ExecutionRepository {
         return Optional.of(execution);
     }
 
+    public ExecutionMasterListDTO getExecutionMasterList(Long executionId) {
+        return masterListDAO.getMasterList(executionId);
+    }
 
     public Execution instantiateByFlow(Long flowId) {
         Flow flow = flowRepository.findById(flowId)

@@ -1,6 +1,7 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.rest;
 
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionMasterListDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionPreviewDTO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.ExecutionGraph;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution.GraphBuilder;
@@ -53,6 +54,11 @@ public class ExecutionRestController {
         return execution
             .map(e -> new ResponseEntity<>(new ExecutionDTO(e), HttpStatus.OK))
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/execution/{executionId}/masterlist")
+    public ResponseEntity<ExecutionMasterListDTO> getExecutionMasterList(@PathVariable Long executionId) {
+        return new ResponseEntity<>(executionRepository.getExecutionMasterList(executionId), HttpStatus.OK);
     }
 
     @PostMapping("/execution/start")

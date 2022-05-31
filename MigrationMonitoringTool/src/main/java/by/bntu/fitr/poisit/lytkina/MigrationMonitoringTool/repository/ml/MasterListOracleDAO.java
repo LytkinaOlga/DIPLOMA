@@ -1,11 +1,15 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionMasterListDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionMasterListEntityDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @ConditionalOnExpression("'${spring.datasource.url}'.startsWith('jdbc:oracle:')")
@@ -20,13 +24,13 @@ public class MasterListOracleDAO implements MasterListDAO {
 
         jdbcTemplate.execute(
             "create table " + mlTableName
-                + "(entity_id number, status varchar2(20), error_message varchar2(4000), "
+                + "(entity_id number, status varchar2(20), failed_on varchar(200), error_message varchar2(4000), "
                 + "CONSTRAINT " + mlTableName + "_PK  PRIMARY KEY (entity_id))"
         );
         logger.trace("Created master list table '{}'", mlTableName);
         int count = jdbcTemplate.update(
-            "insert into " + mlTableName + " (entity_id, status) \n"
-                + "select " + entityIdColumn + ", 'OK' from " + entitiesTableName
+            "insert into " + mlTableName + " (entity_id, status, failed_on, error_message) \n"
+                + "select " + entityIdColumn + ", 'OK', '', '' from " + entitiesTableName
         );
         jdbcTemplate.execute("COMMIT");
         logger.debug("Created master list table '{}' with {} rows", mlTableName, count);
@@ -69,8 +73,9 @@ public class MasterListOracleDAO implements MasterListDAO {
             "MERGE INTO " + mlTableName + " x\n" +
                 "USING (SELECT entity_id, status, error_message FROM " + mlAdapterTableName + " where status = 'FAILED') y\n" +
                 "ON (x.entity_id  = y.entity_id)\n" +
-                "WHEN MATCHED THEN UPDATE SET x.status = case x.status when 'OK' then y.status else x.status end\n" +
-                ", x.error_message = case x.error_message when null then y.error_message else x.error_message || y.error_message"
+                "WHEN MATCHED THEN UPDATE SET x.status = 'FAILED'\n" +
+                ", x.error_message = x.error_message || y.error_message || ';'\n" +
+                ", x.failed_on = x.failed_on || '" + nodeId + ";'"
         );
         logger.debug("Merged {} rows from adapter master list table '{}'", count, mlAdapterTableName);
 
@@ -80,9 +85,27 @@ public class MasterListOracleDAO implements MasterListDAO {
         );
         logger.debug("Succeeded entities count: {}", count);
 
-        jdbcTemplate.execute("drop table " + mlAdapterTableName);
+        jdbcTemplate.execute("drop table " + mlAdapterTableName + " CASCADE CONSTRAINTS");
         logger.debug("Dropped adapter master list table '{}' ", mlAdapterTableName);
         return count;
+    }
+
+
+    @Override
+    public ExecutionMasterListDTO getMasterList(Long executionId) {
+        String mlTableName = ML_TABLE_PREFIX + executionId;
+        List<ExecutionMasterListEntityDTO> entities =
+            jdbcTemplate.query(
+                "select entity_id, status, failed_on, error_message from " + mlTableName,
+                (rs, rowNum) ->
+                    new ExecutionMasterListEntityDTO(
+                        rs.getString("entity_id"),
+                        rs.getString("status"),
+                        rs.getString("failed_on"),
+                        rs.getString("error_message")
+                    )
+            );
+        return new ExecutionMasterListDTO(entities);
     }
 }
 

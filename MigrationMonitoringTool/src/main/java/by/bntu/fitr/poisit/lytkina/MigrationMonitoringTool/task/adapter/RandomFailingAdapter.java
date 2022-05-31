@@ -43,7 +43,7 @@ public class RandomFailingAdapter extends AbstractTask {
                         "    )\n" +
                         ") y\n" +
                         "ON (x.entity_id  = y.entity_id)\n" +
-                        "WHEN MATCHED THEN UPDATE SET x.status = y.status, x.error_message = y.error_message"
+                        "WHEN MATCHED THEN UPDATE SET x.status = y.status, x.error_message = y.error_message end"
                 );
             } else if (dbURL.contains("postgres")) {
                 count = jdbcTemplate.update(
