@@ -13,16 +13,16 @@ create table customers(
 );
 create table orders (
   id number,
-  submit_date timestamp,
   customer_id number,
+  submit_date timestamp,
   primary key (id),
   foreign key (id) references customers(id)
 );
 create table orders_products (
-  product_id number,
   order_id number,
+  product_id number,
   quantity number,
   primary key (order_id, product_id),
-  foreign key (product_id) references products(id),
-  foreign key (order_id) references orders(id)
+  foreign key (order_id) references orders(id),
+  foreign key (product_id) references products(id)
 );

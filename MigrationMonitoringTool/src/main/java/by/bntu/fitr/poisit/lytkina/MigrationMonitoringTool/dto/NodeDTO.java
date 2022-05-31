@@ -27,7 +27,9 @@ public class NodeDTO {
     @Valid
     private NodePositionDTO position;
 
-    private String taskId;
+    @PositiveOrZero
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long taskId;
 
     @Valid
     private List<NodeParameterDTO> nodeParametersDTO;
@@ -39,7 +41,7 @@ public class NodeDTO {
             nodeJPA.getX(),
             nodeJPA.getY()
         );
-        this.taskId = nodeJPA.getTask().getId().toString();
+        this.taskId = nodeJPA.getTask().getId();
         this.nodeParametersDTO = mapCollect(nodeJPA.getParameters(), NodeParameterDTO::new);
     }
 

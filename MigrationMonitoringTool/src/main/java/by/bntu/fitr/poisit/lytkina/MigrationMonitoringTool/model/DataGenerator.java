@@ -3,14 +3,18 @@ package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.*;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.*;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
+import com.github.javafaker.Book;
+import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_COLUMN_PARAM_ID;
@@ -35,6 +39,78 @@ public class DataGenerator {
 
     @Autowired
     TaskParameterJPARepository taskParameterJPARepository;
+
+    public void printSourceInitializationDML(String fileName, int productsCount, int customersCount, int ordersCount) {
+        try {
+
+        File file = new File(fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+
+        Faker faker = new Faker();
+
+        for (int i = 1; i < productsCount+1; i++) {
+            Book book = faker.book();
+            bw.append(
+                "insert into products(id, name, price, total_quantity) values ("
+                + i + ", "
+                + "'\"" +book.title().replace("'", "''") + "\" by " + book.author().replace("'", "''") + "', "
+                + faker.numerify("###.##") + ", "
+                + faker.number().numberBetween(1, 100)
+                + ");\n"
+            );
+        }
+        for (int i = 1; i < customersCount+1; i++) {
+            Name name = faker.name();
+            bw.append(
+                "insert into customers(id, first_name, last_name) values ("
+                    + i + ", "
+                    + "'" +name.firstName().replace("'", "''") + "', "
+                    + "'" + name.lastName().replace("'", "''") + "'"
+                    + ");\n"
+            );
+        }
+        for (int i = 1; i < ordersCount+1; i++) {
+            Date submitDate = faker.date().past(365, TimeUnit.DAYS);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:m:ss");
+            int customerId = new Random().nextInt(customersCount-1) + 1;
+            bw.append(
+                "insert into orders(id, customer_id, submit_date) values ("
+                    + i + ", "
+                    + customerId + ", "
+                    + "TO_TIMESTAMP('" + sdf.format(submitDate) + "', 'YYYY-MM-DD HH24:MI:SS')"
+                    + ");\n"
+            );
+        }
+        for (int i = 1; i < ordersCount; i++) {
+            Random random = new Random();
+            int productsInOrder = (int) (Math.floor(-1 * Math.log(1-random.nextDouble())) % productsCount) + 1;
+            HashSet<Integer> usedProducts = new HashSet<>();
+            for (int productNumber = 0; productNumber < productsInOrder; productNumber++) {
+                int productId = new Random().nextInt(productsCount-1) + 1;
+                while (usedProducts.contains(productId)) {
+                    productId = new Random().nextInt(productsCount-1) + 1;
+                }
+                usedProducts.add(productId);
+                int productQuantityInOrder = new Random().nextInt(15) + 1;
+
+                bw.append(
+                    "insert into orders_products(order_id, product_id, quantity) values ("
+                        + i + ", "
+                        + productId + ", "
+                        + productQuantityInOrder
+                        + ");\n"
+                );
+            }
+        }
+        bw.flush();
+        bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateTwoTestTasksFlow() {
