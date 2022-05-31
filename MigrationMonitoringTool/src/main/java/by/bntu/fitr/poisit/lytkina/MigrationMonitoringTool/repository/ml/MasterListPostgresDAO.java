@@ -1,11 +1,18 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml;
 
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionMasterListDTO;
+import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.dto.execution.ExecutionMasterListEntityDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 @ConditionalOnExpression("'${spring.datasource.url}'.startsWith('jdbc:postgresql:')")
@@ -20,12 +27,12 @@ public class MasterListPostgresDAO implements MasterListDAO {
 
         jdbcTemplate.execute(
             "create table " + mlTableName
-                + "(entity_id numeric, status text, error_message text, primary key (entity_id))"
+                + "(entity_id numeric, status text, failed_on text, error_message text, primary key (entity_id))"
         );
         logger.trace("Created master list table '{}'", mlTableName);
         int count = jdbcTemplate.update(
-            "insert into " + mlTableName + " (entity_id, status) \n"
-            + "select " + entityIdColumn + ", 'OK' from " + entitiesTableName
+            "insert into " + mlTableName + " (entity_id, status, failed_on, error_message) \n"
+            + "select " + entityIdColumn + ", 'OK', '', '' from " + entitiesTableName
         );
         logger.debug("Created master list table '{}' with {} rows", mlTableName, count);
         return count;
@@ -63,13 +70,13 @@ public class MasterListPostgresDAO implements MasterListDAO {
         String mlTableName = ML_TABLE_PREFIX + executionId;
 
         int count = jdbcTemplate.update(
-            "insert into " + mlTableName + "\n" +
-                "select entity_id, status, error_message\n" +
+            "insert into " + mlTableName + " (entity_id, status, error_message)\n" +
+                "select entity_id, status, error_message \n" +
                 "from ( select * from " + mlAdapterTableName + " where status = 'FAILED') t\n" +
                 "on conflict (entity_id) do update set\n" +
-                "  status = case when (" + mlTableName + ".status = 'OK') then excluded.status else " + mlTableName + ".status end,\n" +
-                "  error_message = case when (" + mlTableName + ".error_message is null) then " +
-                "excluded.error_message else " + mlTableName + ".error_message || ';' || excluded.error_message end"
+                "  status = 'FAILED',\n" +
+                "  error_message = " + mlTableName + ".error_message || excluded.error_message || ';',\n" +
+                "  failed_on = " + mlTableName + ".failed_on || '" + nodeId + ";'"
         );
         logger.debug("Merged {} rows from adapter master list table '{}'", count, mlAdapterTableName);
 
@@ -82,5 +89,22 @@ public class MasterListPostgresDAO implements MasterListDAO {
 //        jdbcTemplate.execute("drop table " + mlAdapterTableName);
         logger.debug("Dropped adapter master list table '{}' ", mlAdapterTableName);
         return count;
+    }
+
+    @Override
+    public ExecutionMasterListDTO getMasterList(Long executionId) {
+        String mlTableName = ML_TABLE_PREFIX + executionId;
+        List<ExecutionMasterListEntityDTO> entities =
+            jdbcTemplate.query(
+                "select entity_id, status, failed_on, error_message from " + mlTableName,
+                (rs, rowNum) ->
+                    new ExecutionMasterListEntityDTO(
+                        rs.getString("entity_id"),
+                        rs.getString("status"),
+                        rs.getString("failed_on"),
+                        rs.getString("error_message")
+                    )
+            );
+        return new ExecutionMasterListDTO(entities);
     }
 }
