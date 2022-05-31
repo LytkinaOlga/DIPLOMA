@@ -30,7 +30,7 @@ public class MigrationMonitoringToolApplication implements CommandLineRunner {
 
 	@Transactional
 	public void run(String... args) throws Exception {
-		dataGenerator.generateMLFakeAdapterFlow();
+		dataGenerator.generateMLAdapterFlow();
 //		dataGenerator.printSourceInitializationDML(
 //			"source.dml.sql",
 //			53,

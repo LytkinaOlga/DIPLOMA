@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListAdapter.URL_PARAM_ID;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_COLUMN_PARAM_ID;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_TABLE_PARAM_ID;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.RandomFailingAdapter.SUCCESS_RATE_PARAM_ID;
@@ -238,12 +238,73 @@ public class DataGenerator {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void generateMLAdapterFlow() {
+        FlowJPA flow = new FlowJPA();
+        flow.setId(1L);
+        flow.setName("Customer Migration");
+        flow = flowJPARepository.save(flow);
+
+        TaskJPA masterListTask = taskJPARepository.getById(Constants.Tasks.MasterListCreator.ID);
+        TaskParameterJPA entityTableParam = taskParameterJPARepository.getById(ENTITY_TABLE_PARAM_ID);
+        TaskParameterJPA entityIdColumnParam = taskParameterJPARepository.getById(ENTITY_COLUMN_PARAM_ID);
+
+        TaskJPA randomFailingAdapterTask = taskJPARepository.getById(Constants.Tasks.MasterListAdapter.ID);
+        TaskParameterJPA urlParam = taskParameterJPARepository.getById(URL_PARAM_ID);
+
+        NodeJPA node1 = new NodeJPA();
+        node1.setName("Master List Creation");
+        node1.setFlow(flow);
+        node1.setX(100.1);
+        node1.setY(100.1);
+        node1.setTask(masterListTask);
+        node1.setParameters(Arrays.asList(
+            new NodeParameterJPA(node1, entityTableParam, "customers"),
+            new NodeParameterJPA(node1, entityIdColumnParam, "id")
+        ));
+
+        NodeJPA node2 = new NodeJPA();
+        node2.setName("Validation Adapter");
+        node2.setFlow(flow);
+        node2.setX(200.2);
+        node2.setY(200.2);
+        node2.setTask(randomFailingAdapterTask);
+        node2.setParameters(Arrays.asList(
+            new NodeParameterJPA(node2, urlParam, "http://localhost:8091")
+        ));
+
+        NodeJPA node3 = new NodeJPA();
+        node3.setName("Customer Migration Adapter");
+        node3.setFlow(flow);
+        node3.setX(200.2);
+        node3.setY(300.2);
+        node3.setTask(randomFailingAdapterTask);
+        node3.setParameters(Arrays.asList(
+            new NodeParameterJPA(node3, urlParam, "http://localhost:8092")
+        ));
+
+        node1 = nodeRepository.save(node1);
+        node2 = nodeRepository.save(node2);
+        node3 = nodeRepository.save(node3);
+
+        EdgeJPA edge1 = new EdgeJPA();
+        edge1.setNodeFrom(node1.getId());
+        edge1.setNodeTo(node2.getId());
+
+        EdgeJPA edge2 = new EdgeJPA();
+        edge2.setNodeFrom(node2.getId());
+        edge2.setNodeTo(node3.getId());
+
+        edgeRepository.save(edge1);
+        edgeRepository.save(edge2);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateComplexFlow() {
         TaskJPA testTaskJPA = taskJPARepository.getById(Constants.Tasks.TestTask.ID);
         TaskParameterJPA messageParameterJPA = taskParameterJPARepository.getById(MESSAGE_PARAM_ID);
         TaskParameterJPA delayParameterJPA = taskParameterJPARepository.getById(DELAY_PARAM_ID);
 
-        TaskJPA adapterTaskJPA = taskJPARepository.getById(Constants.Tasks.Adapter.ID);
+        TaskJPA adapterTaskJPA = taskJPARepository.getById(Constants.Tasks.MasterListAdapter.ID);
         TaskParameterJPA adapterParamURL = taskParameterJPARepository.getById(URL_PARAM_ID);
 
         TaskJPA manualTask = taskJPARepository.getById(Constants.Tasks.ManualTask.ID);

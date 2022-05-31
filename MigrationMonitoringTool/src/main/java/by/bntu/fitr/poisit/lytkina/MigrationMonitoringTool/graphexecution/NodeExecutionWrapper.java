@@ -1,24 +1,16 @@
 package by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.graphexecution;
 
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.ExecutionNode;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionNodeJPA;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.ExecutionProgressJPAPK;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.model.jpa.NodeJPA;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.ExecutionNodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.jpa.NodeJPARepository;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.Task;
-import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.task.adapter.AdapterTask;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.TransactionalParamUpdater;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Constructor;
@@ -28,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.ParamNames.NODE_PARAM_PREFIX;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.URL_PARAM_ID;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListAdapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 
 @NoArgsConstructor
 public class NodeExecutionWrapper implements Runnable {

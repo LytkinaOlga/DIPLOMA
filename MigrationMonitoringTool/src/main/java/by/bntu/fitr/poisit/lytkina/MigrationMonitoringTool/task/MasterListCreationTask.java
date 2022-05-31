@@ -4,7 +4,7 @@ import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.config.SpringContext;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO;
 import by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants;
 
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListAdapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_COLUMN_PARAM_ID;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListCreator.ENTITY_TABLE_PARAM_ID;
 

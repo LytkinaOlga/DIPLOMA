@@ -27,8 +27,8 @@ public interface Constants {
             Long ENTITY_COLUMN_PARAM_ID = 6L;
 
         }
-        interface Adapter {
-            Long ID = 5L;
+        interface MasterListAdapter {
+            Long ID = 4L;
             Long URL_PARAM_ID = 3L;
             String SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX = "SUCCESSFULLY_PROCESSED_ENTITIES";
 
@@ -36,6 +36,10 @@ public interface Constants {
         interface RandomFailingAdapter {
             Long ID = 5L;
             Long SUCCESS_RATE_PARAM_ID = 4L;
+        }
+        interface Adapter {
+            Long ID = 6L;
+            Long URL_PARAM_ID = 7L;
         }
     }
 }

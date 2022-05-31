@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.repository.ml.MasterListDAO.ML_TABLE_PREFIX;
-import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.Adapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
+import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.MasterListAdapter.SUCCESS_PROCESS_ENTITIES_RESULT_POSTFIX;
 import static by.bntu.fitr.poisit.lytkina.MigrationMonitoringTool.utils.Constants.Tasks.RandomFailingAdapter.SUCCESS_RATE_PARAM_ID;
 
 public class RandomFailingAdapter extends AbstractTask {
