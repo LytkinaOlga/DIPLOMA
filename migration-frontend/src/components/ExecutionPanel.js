@@ -62,7 +62,7 @@ export default function ExecutionPanel({ execution }) {
                     (execution.endDate != null) ? <Typography sx={{ mt: 3, ml: 3, mb: 3 }} >End: {execution.endDate}</Typography> : <></>
                 }
                 {
-                    (execution.errorMessage != null) ? <Typography sx={{ mt: 3, ml: 3, mb: 3 }} >End: {execution.errorMessage}</Typography> : <></>
+                    (execution.errorMessage != null) ? <Typography sx={{ mt: 3, ml: 3, mb: 3 }} >Error: {execution.errorMessage}</Typography> : <></>
                 }
                 {
                     (migrationStatisticsNeeded && (execution.status === "SUCCEEDED" || execution.status === "FAILED")) ? <Button variant="contained"

@@ -1,10 +1,10 @@
 
-import { Container, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import ExecutionService from '../services/ExecutionService';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -13,9 +13,11 @@ import {
     Title,
     Tooltip,
     Legend,
+    ArcElement
 } from 'chart.js';
 
 ChartJS.register(
+    ArcElement,
     CategoryScale,
     LinearScale,
     BarElement,
@@ -38,7 +40,7 @@ const columns = [
         width: 150
     },
     { field: 'failedOn', headerName: 'FAILED ON', width: 250 },
-    { field: 'errorMessage', headerName: 'ERROR MESSAGE', width: 300 }
+    { field: 'errorMessage', headerName: 'ERROR MESSAGE', width: 1000 }
 ];
 const options = {
     responsive: true,
@@ -58,6 +60,8 @@ export default function Statistics(props) {
     const [masterList, setMasterList] = React.useState([]);
     const [execution, setExecution] = React.useState({});
     const [data, setData] = React.useState({});
+    const [dataForPie, setDataForPie] = React.useState({});
+
 
 
     React.useEffect(() => {
@@ -85,12 +89,44 @@ export default function Statistics(props) {
                     {
                         label: 'Migrated entities',
                         data: quantity,
-                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                        backgroundColor: [
+                            'rgba(255, 99, 132)',
+                            'rgba(54, 162, 235)',
+                            'rgba(255, 206, 86)',                            
+                          ],
                     }
                 ],
             };
             setData(data);
             console.log(data);
+            const labelsForPie = [];
+            labels.forEach((element) => {
+                if (element != "Master List Creation"){
+                    labelsForPie.push(element + " working time");
+                }                
+            })
+            console.log(labelsForPie);
+            const workingTime = [];
+            res.data.nodes.forEach((node) => {
+                const duration = node.startDate - node.endDate;
+                console.log(duration);
+                workingTime.push(duration);
+            })
+            const dataForPie = {
+                labels,
+                datasets: [
+                    {
+                        label: 'Migrated entities',
+                        data: quantity,
+                        backgroundColor: [
+                            'rgba(255, 99, 132)',
+                            'rgba(54, 162, 235)',
+                            'rgba(255, 206, 86)',                            
+                          ],
+                    }
+                ],
+            };
+            setDataForPie(dataForPie);
         })
 
     }, [])
@@ -99,10 +135,20 @@ export default function Statistics(props) {
     console.log(useParams())
     return (
         <Container sx={{ mt: 15 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                <div style={{width: '600px'}}>
             {
                 (data.datasets != undefined) ? <Bar options={options} data={data} /> : <></>
             }
+            </div>
+            <div style={{width: '400px'}}>
+            {
+                (data.datasets != undefined) ? <Pie data={dataForPie} /> : <></>
+            }
+            </div>
+            </Box>
             
+
             <div style={{ height: 800, width: '100%', marginTop: 40 }}>
                 <DataGrid
                     rows={masterList}
